@@ -1,0 +1,16 @@
+body {
+    padding: 100px
+}
+
+.loginform input {
+    border: 1px solid #ccc;
+    width: 500px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}

@@ -1,0 +1,11 @@
+body {
+    padding: 100px
+}
+
+.loginform input {
+    /* CSS properties here */
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
