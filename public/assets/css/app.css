@@ -1,5 +1,5 @@
 body {
-    padding: 100px
+    padding: 10px
 }
 
 .loginform input {
@@ -14,3 +14,188 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+
+.main-container{
+
+  display: flex;
+  flex-direction: row;
+}
+
+.navigation-container{
+  display: flex;
+  flex-direction: row;
+  margin-right: 5vw;
+}
+
+
+.navigation-container ul{
+  border: 1px solid black;
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 15vw;
+
+}
+
+.navigation-container li{
+
+  padding: 2.5vh 0 2.5vh 0;
+
+}
+.navigation-container a{
+  text-decoration: none;
+
+}
+
+.content-quickstats{
+  display: flex;
+  flex-direction: row;
+}
+
+.content-quickstats .stat-item{
+  margin:2.5vh 5vw 0 0;
+}
+
+.shortcut-menu{
+  display: flex;
+  flex-direction: column;
+}
+
+.shortcut-menu .menu-row{
+  display: flex;
+  flex-direction: row;
+}
+
+.menu-row .menu-item{
+
+  text-align: center;
+  padding: 1.25vh;
+  margin:1.2vh 1.2vh 0 0;
+  border: 1px solid black;
+  width: 20vw;
+
+}
+
+.profile-container{
+
+  display: flex;
+  flex-direction: row;
+
+}
+
+
+.profile-container p{
+
+  padding: .75vw .75vw 0 0 ;
+
+}
+.content-header{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  /* border: 1px solid red; */
+  width: 60vw;
+
+
+}
+
+.searchbar{
+  /* border: 1px solid rgb(44, 1, 105); */
+
+  position:relative;
+  display: flex;
+  flex-direction: row;
+  margin-top: auto;
+  margin-bottom: auto;
+  right:0;
+}
+
+
+
+.resident-container{
+
+  display: flex;
+  flex-direction: column;
+   
+
+}
+
+.resident-header{
+
+  display: flex;
+  flex-direction: row;
+  /* border: 1px solid red; */
+  justify-content: space-between;
+
+  width: 60vw;
+
+}
+
+.resident-detail{
+
+  display: flex;
+  flex-direction: column;
+  /* border: 1px solid black; */
+  width: 80%;
+
+}
+
+.approval-container{
+
+  margin: auto;
+  padding: .5vw;
+
+}
+
+.approval-container button{
+
+  margin: auto;
+  padding: 1.5vw;
+  cursor: pointer;
+
+  /* border:1px solid black; */
+  
+}
+
+.resident-table-container{
+
+  border: 1px solid black;
+  height: 60vh;
+
+}
+
+.resident-table-container table{
+
+ width: 100%;
+ height: auto;
+
+
+}
+
+.resident-table-container td {
+
+  margin:auto;
+  padding: 1vh 1vh;
+  border: 1px solid black;
+ }
+
+.resident-table-container thead{
+
+  border: 1px solid black;
+
+}
+
+
+.resident-table-container th{
+
+  border: 1px solid black;
+
+}
+ 
+.resident-table tbody tr td {
+  cursor: pointer;
+}
+ 
+ 

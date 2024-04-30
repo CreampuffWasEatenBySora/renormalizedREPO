@@ -6,7 +6,7 @@
 </head>
 <body>
 
-    <h1>Welcome to Barangay E-Connect!</h1>
+    <h1>Resident panel</h1>
     <div class="container">
         <br>
         @yield('content')

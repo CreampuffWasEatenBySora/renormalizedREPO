@@ -4,6 +4,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\ApiController;
+use App\Http\Controllers\Api\requestApiController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -21,3 +22,11 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 Route::post('/register', [ApiController::class, 'register']);
 Route::post('/uploadImages', [ApiController::class, 'uploadImages']);
+
+Route::post('/submitRequestRecord', [requestApiController::class, 'enterRequestRecord']);
+Route::post('/uploadRequirements', [requestApiController::class, 'uploadRequirements']);
+Route::post('/fetchRequest', [requestApiController::class, 'fetchRequestSet']);
+Route::post('/updateRequest',[requestApiController::class, 'updateRequestRecord']);
+
+
+

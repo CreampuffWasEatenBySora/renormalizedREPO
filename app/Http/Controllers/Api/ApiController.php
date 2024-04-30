@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use App\Models\barangay_residents;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 use App\Models\addresses;
+use Illuminate\Auth\Events\Registered;
 use App\Models\registration;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Validation\Rules\Password;
@@ -34,8 +37,17 @@ class ApiController extends Controller
                 'UUID' => $uuid,
                 'fullName' => $fullName,
                 'email' => $email,
-                'password' => $password
+                'password' => Hash::make($password)
+
             ]);
+
+            User::create([
+                'name' => $fullName,
+                'UUID' => $uuid,
+                'email' => $email,
+                'password' => Hash::make($password)
+            ]);
+    
 
             $municipality = $request->input('temp_resident_addressData.municipality');
             $barangay = $request->input('temp_resident_addressData.barangay');
@@ -48,7 +60,7 @@ class ApiController extends Controller
                 'resident_id' => $uuid,
                 'municipality' => $municipality,
                 'barangay' => $barangay,
-                'subdivision/district' => $subdivision,
+                'subdivision_district' => $subdivision,
                 'house_number' => $houseNumber,
                 'phone_number' => $phoneNumber
             ]);
@@ -86,13 +98,12 @@ class ApiController extends Controller
     public function uploadImages(Request $request){
 
         $regId = $request->input('registrationID');
-        $newRegistration = DB::table("registrations")->where('resident_id', $regId)->first(); 
+      
         
         
          try {
 
             foreach ($request->all() as $key => $value) {
-                Log::info($regId);
                 if ($request->hasFile($key)) {
                    
                     // Get the identifier from the form field name
@@ -100,11 +111,25 @@ class ApiController extends Controller
                 
                     // Get the original filename
                     $originalFilename = $value->getClientOriginalName();
-                   
+                    $parts = explode("-", $originalFilename);
+                    $regId = $parts[1];
+                     Log::info($regId);
+
+                    $newRegistration = registration::find($regId);
                     // Log::info("Imagefound:" . $key . " - " .$value);  // Debug statement
                    
                     $path = $value->storeAs('registration_images', $originalFilename);
-                
+
+                    if ( Str::contains($originalFilename, 'selfie')) {
+
+                        $newRegistration->update([
+                            'selfie_filepath' => $path
+                        ]);
+                    } else {
+                        $newRegistration->update([
+                            'document_filepath' => $path
+                        ]);
+                    }
                    
                 } 
             }
