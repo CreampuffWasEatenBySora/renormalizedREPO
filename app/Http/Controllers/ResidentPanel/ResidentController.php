@@ -67,28 +67,32 @@ class ResidentController extends Controller
     }
     
     public function investigate(Request $request){
-        $resident_id = $request->input('resident_id');
+        $resident_id = $request->input('resident_uuid');
         try {
             $query = 
-            "SELECT  br.fullName as `Resident`, br.status, br.birthday, br.email,  ad.municipality,  ad.barangay, ad.subdivision_district, ad.house_number, ad.phone_number, reg.requirement_type,  reg.date_registered, officer.fullName as `Barangay Officer`, reg.date_responded, reg.remarks, reg.selfie_filepath, reg.document_filepath
+            "SELECT  br.fullName as `resident_name`, br.status, br.birthday, br.email,  ad.municipality,  ad.barangay, ad.subdivision_district, ad.house_number, ad.phone_number, reg.requirement_type,  reg.date_registered, officer.fullName as `Barangay Officer`, reg.date_responded, reg.remarks, reg.selfie_filepath, reg.document_filepath
             FROM registrations as reg
             INNER JOIN barangay_residents as br
             ON br.UUID = reg.resident_id 
-            INNER JOIN barangay_residents as officer
+            LEFT JOIN barangay_residents as officer
             ON officer.UUID = reg.barangay_officer_id
             INNER JOIN addresses as ad
-            ON ad.resident_id = reg.resident_id;            
-            WHERE br.UUID = ".$resident_id;
-
+            ON ad.resident_id = reg.resident_id           
+            WHERE br.UUID = '".$resident_id."'";
             
+            $resultSet = DB::select($query);       
+            Log::info("Query Submitted: ". $query);
+            $jsonData = json_encode($resultSet);
+            
+
+            Log::info("Resident set returned successfully: ". $jsonData);  // Debug statement
+            return view('administrator.resident_operations.view_resident')->with('data', json_decode($jsonData, true));
+        
         } catch (\Throwable $th) {
-            //throw $th;
+            Log::info("Error in viewing resident detail: ". $th);
+            return response()->json(['status' => 'failed'], 200);
+
         }
-
-        return view('administrator.resident_operations.view_resident', $request);
-
-
-
 
     }
 

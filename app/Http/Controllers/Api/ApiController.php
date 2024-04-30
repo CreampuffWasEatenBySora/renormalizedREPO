@@ -88,7 +88,7 @@ class ApiController extends Controller
         }
 
             Log::info("User records updated successfully.");  // Debug statement
-            return response()->json(['status' => 'success', 'message' => 'Account is added','registrationID' => $newRegistration->id], 200);
+            return response()->json(['status' => 'success', 'message' => 'Account is added','registrationID' => $newRegistration->id, 'residentID' => $newResidentID->UUID], 200);
         } catch (\Exception $e) {
             Log::error("Error registering user: {$e->getMessage()}");  // Debug statement
             return response()->json(['status' => 'error', 'message' => 'Registration failed'], 500);
@@ -123,8 +123,10 @@ class ApiController extends Controller
                     if ( Str::contains($originalFilename, 'selfie')) {
 
                         $newRegistration->update([
-                            'selfie_filepath' => $path
+                            'selfie_filepath' => $path,
+                            'remarks' => 'For verification'
                         ]);
+                        
                     } else {
                         $newRegistration->update([
                             'document_filepath' => $path

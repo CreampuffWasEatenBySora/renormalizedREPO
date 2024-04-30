@@ -14,7 +14,7 @@ class addresses extends Model
         'resident_id',
         'municipality',
         'barangay',
-        'subdivision/district',
+        'subdivision_district',
         'house_number',
         'phone_number'
     ];

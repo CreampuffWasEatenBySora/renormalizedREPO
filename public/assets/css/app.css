@@ -198,4 +198,42 @@ input::-webkit-inner-spin-button {
   cursor: pointer;
 }
  
- 
+/*Individual Resident page css*/
+
+.resident-detail-container  {
+
+  border: 1px solid black;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.resident-side-box{
+
+  width: 50vw;
+}
+.resident-detail-container div {
+  border: 1px solid rgb(13, 154, 164);
+
+  padding: 10px;
+  width: 100%;
+
+}
+
+.verification-window{
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgb(22, 48, 104);
+  width: auto;
+
+}
+
+.verification-window div{
+  border: 1px solid rgb(136, 13, 87);
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: auto;
+
+}
+

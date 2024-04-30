@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminPanel\AdminController;
 use App\Http\Middleware\RoleMiddleWare;
 use App\Http\Controllers\ResidentPanel\ResidentController;
+use App\Http\Controllers\base_residentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,8 +29,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::get('/admin/home',[AdminController::class,'index'])->name('admin.home');
     Route::get('/admin/residents',[ResidentController::class,'index'])->name('admin.list_residents');
-    Route::get('/admin/view_resident',[ResidentController::class,'index'])->name('admin.view_resident');
-    Route::get('/resident/home',[ResidentController::class,'index'])->name('resident.home');
+    Route::get('/admin/residents/view_resident',[ResidentController::class,'investigate'])->name('admin.view_resident');
+    Route::get('/resident/home',[base_residentController::class,'index'])->name('resident.home');
 
     
 });

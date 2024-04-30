@@ -57,7 +57,7 @@
     </div>
 
     <div class="approval-container">
-      <form action=""{{ route('admin.list_residents') }} method="get">
+      <form action= "{{ route('admin.view_resident') }}" method="get">
         <input  style="display: none" id="resident_uuid" name="resident_uuid" type="text">
         <button  type="submit">
           Proceed for Approval

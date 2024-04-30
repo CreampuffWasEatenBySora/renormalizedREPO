@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\barangay_residents;
 use Illuminate\Http\Request;
 
-class residentController extends Controller
+class base_residentController extends Controller
 {
 
     public function residentHome(){
