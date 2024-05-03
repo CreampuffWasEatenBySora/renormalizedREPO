@@ -100,7 +100,6 @@ class ApiController extends Controller
         $regId = $request->input('registrationID');
       
         
-        
          try {
 
             foreach ($request->all() as $key => $value) {
@@ -118,7 +117,7 @@ class ApiController extends Controller
                     $newRegistration = registration::find($regId);
                     // Log::info("Imagefound:" . $key . " - " .$value);  // Debug statement
                    
-                    $path = $value->storeAs('registration_images', $originalFilename);
+                    $path = $value->move(public_path('registration_images'), $originalFilename);
 
                     if ( Str::contains($originalFilename, 'selfie')) {
 

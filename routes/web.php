@@ -30,6 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/home',[AdminController::class,'index'])->name('admin.home');
     Route::get('/admin/residents',[ResidentController::class,'index'])->name('admin.list_residents');
     Route::get('/admin/residents/view_resident',[ResidentController::class,'investigate'])->name('admin.view_resident');
+    Route::get('/admin/residents/view_resident/verify',[ResidentController::class,'updateRegistration'])->name('admin.verify_resident');
     Route::get('/resident/home',[base_residentController::class,'index'])->name('resident.home');
 
     

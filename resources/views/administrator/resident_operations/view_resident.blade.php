@@ -31,11 +31,11 @@
                break;
 
             case 'R':
-               echo 'Active Resident';
+               echo 'Rejected';
                break;
 
             default:
-               echo 'New Account';
+               echo 'Active resident';
                break;
          }
          @endphp
@@ -57,7 +57,7 @@
    <div class="detail-section">
        
       <p> Registered on: {{$data[0]['date_registered'] }}</p>
-      <p> Responded on: 
+      <p> Responded by: 
       @php
          if ( $data[0]['Barangay Officer'] == null) {
             echo "Waiting for approval";
@@ -75,38 +75,139 @@
 
    <div class="resident-side-box">
       
+   
+    @if ( $data[0]['status'] == 'V' )
+         
+      <div class="resident-stats-window">
+         <div class="stat-header">
+            <h3>Resident's stats</h3>
+         </div>
+         <div class="stat-box">
+            <div class="box-header">
+            <h3>Requests</h3>   
+            </div>      
+            <div class="stat-container">
+               <div class="stat">
+                  <p>Rejected:</p>
+                  <p id="collectedRequests"></p>
+               </div>
+               <div class="stat">
+                  <p>Current:</p>
+                  <p id="collectedRequests"></p>
+               </div>
+               <div class="stat">
+                  <p>Approved:</p>
+                  <p id="collectedRequests"></p>
+               </div>
+            </div>
+         </div>
+
+         <div class="stat-box">
+            <div class="box-header">
+            <h3>Collections</h3>   
+            </div>      
+            <div class="stat-container">
+               <div class="stat">
+                  <p>Uncollected:</p>
+                  <p id="collectedRequests"></p>
+               </div>
+               <div class="stat">
+                  <p>Collected:</p>
+                  <p id="collectedRequests"></p>
+               </div>
+            </div>
+         </div>
+
+         <div class="stat-box">
+            <div class="box-header">
+            <h3>Most recent transactions</h3>   
+            </div>      
+            <div class="stat-container">
+               <table>
+                  <thead>
+                     <tr>transaction</tr>
+                  </thead>
+                  <tbody>
+                     <tr> <td>some transaction</td></tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+
+
+      </div>
+         
+      @elseif ($data[0]['status'] == 'N')
       <div class="verification-window">
         
          <div class="verification-header">
             <p>Submitted document: {{ $data[0]['requirement_type']}}</p>
-         </div>
-         
-         <div class="verification-images-container">
-            <div class="selfie">
-               <img src="" alt="" class="verification-image" alt="selfie">
-            </div>
-            <div class="document">
-               <img src="" alt="" class="verification-image" alt="document">
-            </div>
-         </div>
-
+            
          <div class="verification-buttons">
-            <form action= "{{ route('admin.view_resident') }}" method="get">
-               <input  style="display: none" id="resident_uuid" name="resident_uuid" type="text">
+            <form action= "{{ route('admin.verify_resident') }}" method="get">
+               <input  style="display: none" id="resident_uuid" name="resident_uuid" value="{{ $data[0]['UUID'] }}" type="text">
+               <input  style="display: none" name="approval_status" value="V" type="text">
+               <input  style="display: none" name="approval_remarks" value="Verified" type="text">
                <button  type="submit">
                  Approve
                </button>
              </form>
 
-             <form action= "{{ route('admin.view_resident') }}" method="get">
-               <input  style="display: none" id="resident_uuid" name="resident_uuid" type="text">
+             <form action= "{{ route('admin.verify_resident') }}" method="get">
+               <input  style="display: none" id="resident_uuid" name="resident_uuid"  value="{{ $data[0]['UUID'] }}" type="text">
+               <input  style="display: none" name="approval_status" value="R" type="text">
+               <input  style="display: none" name="approval_remarks" value="Rejected" type="text">
                <button  type="submit">
                   Reject
                </button>
              </form>
          </div>
 
+         </div>
+         
+         <div class="verification-images-container">
+            <div class="selfie">
+               <a href="
+               @php
+               $document_filepath = $data[0]['document_filepath'];
+               $document_filepath =  Storage::url($document_filepath);
+                echo asset( $document_filepath);
+               @endphp
+               " target="_blank" rel="noopener noreferrer">
+               <img src="
+               @php
+               $document_filepath = $data[0]['document_filepath'];
+               $document_filepath =  Storage::url($document_filepath);
+                echo asset( $document_filepath);
+               @endphp
+               " alt="" class="verification-image" alt="selfie">
+            </a>
+            </div>
+            <div class="document">
+               <a href="
+               @php
+               $selfie_filepath = $data[0]['selfie_filepath'];
+               $selfie_filepath =  Storage::url($selfie_filepath);
+                echo asset( $selfie_filepath);
+               @endphp
+               " target="_blank" rel="noopener noreferrer">
+               <img src="
+               @php
+               $selfie_filepath = $data[0]['selfie_filepath'];
+               $selfie_filepath =  Storage::url($selfie_filepath);
+                echo asset( $selfie_filepath);
+               @endphp
+               "  alt="" class="verification-image" alt="document">
+            </a>
+            </div>
+         </div>
+
       </div>
+      @else
+      <h1>User is rejected</h1>
+      @endif
+   
+
 
 
    </div>

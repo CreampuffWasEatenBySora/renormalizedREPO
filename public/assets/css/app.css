@@ -202,7 +202,7 @@ input::-webkit-inner-spin-button {
 
 .resident-detail-container  {
 
-  border: 1px solid black;
+  /* border: 1px solid black; */
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -212,28 +212,97 @@ input::-webkit-inner-spin-button {
   width: 50vw;
 }
 .resident-detail-container div {
-  border: 1px solid rgb(13, 154, 164);
+  /* border: 1px solid rgb(13, 154, 164); */
 
   padding: 10px;
-  width: 100%;
 
 }
 
 .verification-window{
   display: flex;
   flex-direction: column;
-  border: 1px solid rgb(22, 48, 104);
-  width: auto;
+  /* border: 1px solid rgb(22, 48, 104); */
+  width: 100%;
 
 }
 
 .verification-window div{
-  border: 1px solid rgb(136, 13, 87);
+  /* border: 1px solid rgb(136, 13, 87); */
 
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: auto;
+}
+
+.verification-header{
+
+  width: 100%;
+}
+.verification-buttons{
+  width: 50%;
+}
+
+.verification-buttons button{
+  width: 12.5vw;
+  height: 100%;
+}
+.verification-images-container{
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-content: center;
+}
+
+
+.verification-images-container div  {
+   width: 50%;
+  /* border: 1px rgb(212, 26, 215) solid; */
+  overflow: hidden;
 
 }
 
+
+.verification-images-container div img{
+  width: 100%; /* Set image width to fill the container */
+    height: 100%; /* Set image height to fill the container */
+    object-fit: cover; /* Scale the image while maintaining aspect ratio to cover the container */
+    top: 0; /* Align image to the top */
+    left: 0; /* Align image to the left */
+    border: 1px black solid;
+}
+.selfie img{
+  position: relative;
+  right: 0;
+}
+
+.document img{
+  position: relative;
+  left: 0;
+}
+
+.resident-stats-window{
+  display: flex;
+  flex-direction: column;
+  /* border: 1px black solid; */
+  height: auto;
+}
+
+.resident-stats-window .stat-box{
+  display: flex;
+  /* border: 1px black solid; */
+  flex-direction: column;
+  padding: 0 5vw 0 5vw;
+}
+
+.resident-stats-window .stat-box h3{
+  margin: 0;
+}
+ 
+.stat-container{
+  /* border: 1px black solid; */
+  display: flex;
+  height: 70%;
+  flex-direction: row;
+  justify-content: space-between;
+}
