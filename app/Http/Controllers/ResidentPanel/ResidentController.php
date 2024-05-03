@@ -133,7 +133,9 @@ class ResidentController extends Controller
             Log::error("Resident access level updated successfully.");  // Debug statement
 
             $query = 
-            "SELECT br.UUID, br.fullName as `resident_name`, br.status, br.birthday, br.email,  ad.municipality,  ad.barangay, ad.subdivision_district, ad.house_number, ad.phone_number, reg.requirement_type,  reg.date_registered, officer.fullName as `Barangay Officer`, reg.date_responded, reg.remarks, reg.selfie_filepath, reg.document_filepath
+            "SELECT br.UUID, br.fullName as `resident_name`, br.status, br.birthday, br.email,  ad.municipality,  
+            ad.barangay, ad.subdivision_district, ad.house_number, ad.phone_number, reg.requirement_type, 
+             reg.date_registered, officer.fullName as `Barangay Officer`, reg.date_responded, reg.remarks, reg.selfie_filepath, reg.document_filepath
             FROM registrations as reg
             INNER JOIN barangay_residents as br
             ON br.UUID = reg.resident_id 
