@@ -45,11 +45,13 @@ class RegisteredUserController extends Controller
         ->upper();
         
         $fullname = $request->lname.", ".$request->fname." ".$mname;
+        $birthday = $request->bday; 
         $uuid = Str::uuid()->toString();
 
         barangay_residents::create([
             'UUID' => $uuid,
             'fullName' => $fullname,
+            'birthday' => $birthday,
             'email' => $request->email,
             'password' => Hash::make($request->password)
         ]);
