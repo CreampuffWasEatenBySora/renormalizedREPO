@@ -5,28 +5,24 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class supplementaryRequirements extends Model
+class requirement_listing extends Model
 {
     use HasFactory;
+
     
     protected $fillable =[
         'id',
-        'from_request_id',
         'for_document_id',
-        'for_requirement_id' 
+        'from_requirement_id' 
     ];
 
-    public function from_request_id()
-    {
-        return $this->belongsTo(requestRecord::class, 'id');
-    }
-
+ 
     public function for_document_id()
     {
         return $this->belongsTo(barangayDocument::class, 'id');
     }
 
-    public function for_requirement_id()
+    public function from_requirement_id()
     {
         return $this->belongsTo(document_requirement::class, 'id');
     }

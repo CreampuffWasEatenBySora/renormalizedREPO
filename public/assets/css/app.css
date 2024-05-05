@@ -137,10 +137,31 @@ input::-webkit-inner-spin-button {
 
   display: flex;
   flex-direction: column;
-  /* border: 1px solid black; */
+  border: 1px solid black;
   width: 80%;
 
 }
+
+.document-detail{
+
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 80%;
+
+}
+
+
+.document-detail #close-button{
+
+  display: flex;
+  align-items: center;
+  padding: 2vh;
+
+   border: 1px solid rgb(150, 21, 21);
+
+}
+
 
 .approval-container{
 

@@ -16,7 +16,8 @@
 
     <li> <a href="{{ route('admin.home') }}"> Home </a></li> 
       <li>  <a href="{{ route('admin.list_residents') }}"> Residents</a></li> 
-      <li>  <a href="{{ route('admin.list_residents') }}"> Documents</a></li> 
+      <li>  <a href="{{ route('admin.list_documents') }}"> Documents</a></li> 
+      <li>  <a href="{{ route('admin.list_requirements') }}"> Requirements</a></li> 
       <li>  <a href="{{ route('admin.list_residents') }}"> Collections</a></li> 
       <li>  <a href="{{ route('admin.list_residents') }}"> About</a></li> 
       

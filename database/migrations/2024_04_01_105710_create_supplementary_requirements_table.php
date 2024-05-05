@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('supplementary_requirements', function (Blueprint $table) {
+        Schema::create('submitted_requirements', function (Blueprint $table) {
             $table->id();
 
             // Foreign Keys

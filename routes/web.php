@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminPanel\AdminController;
 use App\Http\Middleware\RoleMiddleWare;
 use App\Http\Controllers\ResidentPanel\ResidentController;
 use App\Http\Controllers\AdminPanel\documentController;
+use App\Http\Controllers\AdminPanel\requirementController;
 use App\Http\Controllers\base_residentController;
 
 /*
@@ -32,9 +33,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/residents',[ResidentController::class,'index'])->name('admin.list_residents');
     Route::get('/admin/residents/view_resident',[ResidentController::class,'investigate'])->name('admin.view_resident');
     Route::get('/admin/residents/view_resident/verify',[ResidentController::class,'updateRegistration'])->name('admin.verify_resident');
+   
     Route::get('/admin/documents',[documentController::class,'index'])->name('admin.list_documents');
     Route::get('/admin/documents/view_document',[documentController::class,'investigate'])->name('admin.view_document');
-    Route::get('/admin/documents/view_document/modify',[documentController::class,'updateDocument'])->name('admin.modify_document');
+    Route::get('/admin/documents/view_document/modify',[documentController::class,'update'])->name('admin.modify_document');
+    Route::get('/admin/documents/create',[documentController::class,'create'])->name('admin.create_document');
+   
+    Route::get('/admin/requirements',[requirementController::class,'index'])->name('admin.list_requirements');
+    Route::get('/admin/requirements/view_requirement',[requirementController::class,'investigate'])->name('admin.view_requirement');
+    Route::get('/admin/requirements/view_requirement/modify',[requirementController::class,'update'])->name('admin.modify_requirement');
+    Route::get('/admin/requirementss/create',[requirementController::class,'create'])->name('admin.create_requirement');
+    Route::get('/admin/requirementss/create/store',[requirementController::class,'store'])->name('admin.store_requirement');
+   
+   
     Route::get('/resident/home',[base_residentController::class,'index'])->name('resident.home');
 
     

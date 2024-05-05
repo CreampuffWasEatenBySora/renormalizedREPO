@@ -6,14 +6,14 @@
 
   <div class="content-header">
 
-  <h3>Manage DOcuments</h3>
+  <h3>Manage Requirements</h3>
 
   <div class="searchbar">
     <form action="{{ route('admin.list_residents') }}" method="get">
     <button>search</button>
-    <input type="text" name="document_searchbox" id="document_searchbox" :value="old('document_searchbox')">
+    <input type="text" name="searchbox" id="searchbox" :value="old('searchbox')">
    
-    <select name="document_filter" id="document_filter">
+    <select name="filter" id="filter">
 
       <option value="any"> No filter </option>
       <option value="id"> ID </option>
@@ -24,7 +24,7 @@
 
     </select>
 
-    <select name="document_sort" id="document_sort">
+    <select name="sort" id="sort">
       <option value="any"> No filter </option>
       <option value="id"> ID </option>
       <option value="name"> Name</option>
@@ -48,9 +48,9 @@
 
     <div class="document-detail">
       <div class="details-box">
-       <p id="document_regdate" class="detail-regdate">Created on:</p>  
-       <p id="document_name" class="detail-name">Name</p>
-       <p id="document_description" class="detail-address">Description</p>
+       <p id="regdate" class="detail-regdate">Created on:</p>  
+       <p id="name" class="detail-name">Name</p>
+       <p id="description" class="detail-address">Description</p>
       </div>
       <div id="close_button" style="display: none">
         <p>X</p>
@@ -58,18 +58,17 @@
     </div>
 
     <div class="approval-container">
- 
-      <form action= "{{ route('admin.view_document') }}" method="get">
-        <input  style="display: none" id="document_id" name="document_id" type="text">
-        <button  id="add_document_button" type="submit">
-          Add a new document
+      <a href="{{ route('admin.create_requirement') }}">
+        <button  id="add_button" type="submit">
+         Add a new requirement
         </button>
+      </a>  
       </form>
 
-      <form action= "{{ route('admin.view_document') }}" method="get"  style="display: none">>
-        <input  style="display: none" id="document_id" name="document_id" type="text">
-        <button id="edit_document_button" type="submit">
-          Edit This Document
+      <form action= "{{ route('admin.view_requirement') }}" method="get"  style="display: none">>
+        <input  style="display: none" id="id" name="id" type="text">
+        <button id="edit_button" type="submit">
+          Edit This Requirement
         </button>
       </form>
 
@@ -78,12 +77,12 @@
   </div>
 
   <div class="resident-table-container">
-    <table class="document-table" id="document-table">
+    <table class="document-table" id="table">
       <thead>
         <th>Created on:</th>
         <th>Name</th>
         <th>Description</th>
-        <th>Updated</th>
+        <th>Updated on:</th>
       </thead>
        <tbody>
 
@@ -98,29 +97,29 @@
 
 
   // Assume jsonData contains your JSON data
-var jsonData = {!! $document_jsonData !!};
+var jsonData = {!! $requirement_jsonData !!};
 
 // Get a reference to the table body
-var tableBody = document.getElementById('document-table').getElementsByTagName('tbody')[0];
-let document_id = document.getElementById('document_id');
-let document_regdate = document.getElementById('document_regdate');
-let document_name = document.getElementById('document_name');
-let document_description = document.getElementById('document_description');
+var tableBody = document.getElementById('table').getElementsByTagName('tbody')[0];
+let requirement_id = document.getElementById('id');
+let requirement_regdate = document.getElementById('regdate');
+let requirement_name = document.getElementById('name');
+let requirement_description = document.getElementById('description');
 
 let  close_button = document.getElementById('close_button');
-let  add_document_button = document.getElementById('add_document_button');
-let  edit_document_button =document.getElementById('edit_document_button');
+let  add_button = document.getElementById('add_button');
+let  edit_button =document.getElementById('edit_button');
 
-let  reg = document_regdate.textContent;
-let  name = document_name.textContent;
-let  description = document_description.textContent;
+let  reg =  requirement_regdate.textContent;
+let  name = requirement_name.textContent;
+let  description = requirement_description.textContent;
 
 
 close_button.addEventListener('click', function name() {
   
   close_button.style.display = 'none';
-  add_document_button.style.display = 'block';
-  edit_document_button.style.display = 'none';
+  add_button.style.display = 'block';
+  edit_button.style.display = 'none';
 
 })
 
@@ -129,7 +128,7 @@ function fillTable(data) {
       
       
     // Iterate over each entry in the JSON data
-    data.forEach(function(docs) {
+    data.forEach(function(requirement) {
 
 
     // Create a new table row
@@ -140,29 +139,29 @@ function fillTable(data) {
           row.addEventListener('click', function() {
             
             // Handle row click event here
-            document_regdate.textContent = reg.concat(": ", docs.created_at);
-            document_name.textContent = name.concat(": ",docs.name) ;
-            document_description.textContent  = description.concat(": ", docs.description);
-            document_id.value = docs.id;
+            requirement_regdate.textContent = reg.concat(": ", requirement.created_at);
+            requirement_name.textContent = name.concat(": ",requirement.name) ;
+            requirement_description.textContent  = description.concat(": ", requirement.description);
+            requirement_id.value = requirement.id;
             close_button.style.display = 'block';
-            add_document_button.style.display = 'none';
-            edit_document_button.style.display = 'block';
+            add_button.style.display = 'none';
+            edit_button.style.display = 'block';
 
 
           });
 
           // Insert cells into the row and populate them with data
           var cell1 = row.insertCell(0);
-          cell1.innerHTML = docs.created_at;
+          cell1.innerHTML = requirement.created_at;
 
           var cell2 = row.insertCell(1);
-          cell2.innerHTML =  docs.name;
+          cell2.innerHTML =  requirement.name;
 
           var cell3 = row.insertCell(2);
-          cell3.innerHTML =  docs.description;
+          cell3.innerHTML =  requirement.description;
 
           var cell4 = row.insertCell(3);
-          cell4.innerHTML =  docs.updated_at;
+          cell4.innerHTML =  requirement.updated_at;
 
           });
           console.log(jsonData);
@@ -190,7 +189,7 @@ sort_order_button.addEventListener('click', function sorted() {
 
 });
 
-let resident_sort = document.getElementById('document_sort');
+let resident_sort = document.getElementById('sort');
 resident_sort.addEventListener("change", function () {
   
   tableBody.innerHTML = "";
