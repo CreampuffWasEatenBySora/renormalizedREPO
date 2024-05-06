@@ -33,7 +33,7 @@ return new class extends Migration
 
             $table -> foreign('for_document_id')
                    -> references('id') 
-                   -> on('documents') 
+                   -> on('barangay_documents') 
                    -> onDelete('cascade');
 
 

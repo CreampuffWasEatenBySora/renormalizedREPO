@@ -22,7 +22,7 @@ return new class extends Migration
         });
 
 
-        Schema::table('supplementary_requirements', function (Blueprint $table) {
+        Schema::table('submitted_requirements', function (Blueprint $table) {
             $table->dropColumn('requirement_type');
             $table->unsignedBigInteger('for_requirement_id');
 

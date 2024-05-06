@@ -327,3 +327,8 @@ input::-webkit-inner-spin-button {
   flex-direction: row;
   justify-content: space-between;
 }
+.create-form {
+  display: flex;
+  flex-direction: column;
+  width: 50vw;
+}

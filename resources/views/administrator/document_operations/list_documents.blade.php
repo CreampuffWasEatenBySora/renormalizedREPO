@@ -59,7 +59,7 @@
 
     <div class="approval-container">
  
-      <form action= "{{ route('admin.view_document') }}" method="get">
+      <form action= "{{ route('admin.create_document') }}" method="get">
         <input  style="display: none" id="document_id" name="document_id" type="text">
         <button  id="add_document_button" type="submit">
           Add a new document

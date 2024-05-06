@@ -52,6 +52,12 @@ class documentController extends Controller
     }
 
     public function create(Request $request){
-        
+
+        $query = "SELECT * FROM document_requirements";
+        $resultSet = DB::select($query);
+        Log::info("Query Submitted: ". $query);
+        $jsonData = json_encode($resultSet);
+
+        return view('administrator.document_operations.create_document', ['requirement_jsonData' => $jsonData]);
     }
 }
