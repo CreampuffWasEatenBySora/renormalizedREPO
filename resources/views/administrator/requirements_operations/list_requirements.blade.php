@@ -65,9 +65,9 @@
       </a>  
       </form>
 
-      <form action= "{{ route('admin.view_requirement') }}" method="get"  style="display: none">>
-        <input  style="display: none" id="id" name="id" type="text">
-        <button id="edit_button" type="submit">
+      <form action= "{{ route('admin.view_requirement') }}" method="get" id="edit_button" style="display: none" >
+        <input  style="display: none" id="id" name="id" type="text"  >
+        <button type="submit">
           Edit This Requirement
         </button>
       </form>

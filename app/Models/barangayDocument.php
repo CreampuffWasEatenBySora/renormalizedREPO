@@ -14,7 +14,7 @@ class barangayDocument extends Model
         'id',
         'name',
         'description',
-        'supplementary requirements' 
+        'created_at'
     ];
 
     

@@ -60,13 +60,13 @@
     <div class="approval-container">
  
       <form action= "{{ route('admin.create_document') }}" method="get">
-        <input  style="display: none" id="document_id" name="document_id" type="text">
+        <input  style="display: none"  type="text">
         <button  id="add_document_button" type="submit">
           Add a new document
         </button>
       </form>
 
-      <form action= "{{ route('admin.view_document') }}" method="get"  style="display: none">>
+      <form action= "{{ route('admin.view_document') }}" method="get"  style="display: none" id="document_edit_form">
         <input  style="display: none" id="document_id" name="document_id" type="text">
         <button id="edit_document_button" type="submit">
           Edit This Document
@@ -109,7 +109,7 @@ let document_description = document.getElementById('document_description');
 
 let  close_button = document.getElementById('close_button');
 let  add_document_button = document.getElementById('add_document_button');
-let  edit_document_button =document.getElementById('edit_document_button');
+let  edit_document_button =document.getElementById('document_edit_form');
 
 let  reg = document_regdate.textContent;
 let  name = document_name.textContent;

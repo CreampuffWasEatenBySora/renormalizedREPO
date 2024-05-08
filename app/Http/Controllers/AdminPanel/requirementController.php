@@ -81,6 +81,5 @@ class requirementController extends Controller
             return response()->json(['status' => 'failed'], 200);
         }
 
-
     }
 }

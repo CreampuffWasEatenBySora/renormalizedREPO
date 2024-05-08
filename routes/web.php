@@ -35,9 +35,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/residents/view_resident/verify',[ResidentController::class,'updateRegistration'])->name('admin.verify_resident');
    
     Route::get('/admin/documents',[documentController::class,'index'])->name('admin.list_documents');
-    Route::get('/admin/documents/view_document',[documentController::class,'investigate'])->name('admin.view_document');
+    Route::get('/admin/documents/view_document',[documentController::class,'check'])->name('admin.view_document');
     Route::get('/admin/documents/view_document/modify',[documentController::class,'update'])->name('admin.modify_document');
     Route::get('/admin/documents/create',[documentController::class,'create'])->name('admin.create_document');
+    Route::get('/admin/documents/create/store',[documentController::class,'store'])->name('admin.store_document');
    
     Route::get('/admin/requirements',[requirementController::class,'index'])->name('admin.list_requirements');
     Route::get('/admin/requirements/view_requirement',[requirementController::class,'investigate'])->name('admin.view_requirement');
