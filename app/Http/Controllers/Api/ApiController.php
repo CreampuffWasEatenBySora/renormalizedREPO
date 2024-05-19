@@ -83,8 +83,6 @@ class ApiController extends Controller
                 'registration_id' => $newRegistration->id
             ]);
 
-
-
         }
 
             Log::info("User records updated successfully.");  // Debug statement
@@ -116,21 +114,47 @@ class ApiController extends Controller
 
                     $newRegistration = registration::find($regId);
                     // Log::info("Imagefound:" . $key . " - " .$value);  // Debug statement
-                   
-                    $path = $value->move(public_path('registration_images'), $originalFilename);
+                    
 
-                    if ( Str::contains($originalFilename, 'selfie')) {
-
-                        $newRegistration->update([
-                            'selfie_filepath' => $path,
-                            'remarks' => 'For verification'
-                        ]);
+                    if (Str::contains($originalFilename, 'REG')) {
                         
-                    } else {
-                        $newRegistration->update([
-                            'document_filepath' => $path
-                        ]);
-                    }
+                        $path = $value->move(public_path('registration_images'), $originalFilename);
+
+                        if ( Str::contains($originalFilename, 'selfie')) {
+    
+                            $newRegistration->update([
+                                'selfie_filepath' => $path,
+                                'remarks' => 'For verification'
+                            ]);
+                            
+                        } else {
+                            $newRegistration->update([
+                                'document_filepath' => $path
+                            ]);
+                        }
+                        
+                    } else if (Str::contains($originalFilename, 'REQ')) {
+                       
+                        $path = $value->move(public_path('requirement_images'), $originalFilename);
+
+                        if ( Str::contains($originalFilename, 'selfie')) {
+    
+                            $newRegistration->update([
+                                'selfie_filepath' => $path,
+                                'remarks' => 'For verification'
+                            ]);
+                            
+                        } else {
+                            $newRegistration->update([
+                                'document_filepath' => $path
+                            ]);
+                        }
+                        
+
+                    }  
+
+
+                   
                    
                 } 
             }
@@ -143,7 +167,13 @@ class ApiController extends Controller
             return response()->json(['status' => 'error', 'message' => 'Image upload failed'], 500);
            
         }
-            
-
     }
+
+
+     
+
+
+
+
+
 }

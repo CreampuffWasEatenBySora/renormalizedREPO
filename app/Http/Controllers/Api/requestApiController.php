@@ -10,6 +10,7 @@ use App\Models\collectionRecord;
 use App\Models\requestedDocument;
 use App\Models\requestRecord;
 use App\Models\requirements;
+use App\Models\submittedRequirements;
 use App\Models\supplementaryRequirements;
 use DateTime;
 
@@ -40,7 +41,7 @@ class requestApiController extends Controller
             }
             
             foreach ($requirementsJSON as $key => $value) {
-                supplementaryRequirements::create([
+                 submittedRequirements::create([
                  'from_request_id' => $reqID,
                  'for_document_id'=> $value['docID'],
                  'requirement_type'=> $value['type']

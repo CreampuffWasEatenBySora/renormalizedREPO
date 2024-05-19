@@ -15,6 +15,7 @@ class barangay_residents extends Model
         'fullName',
         'email', 
         'password',
+        'birthday',
         'status',
         'access_level',
         'address_id',

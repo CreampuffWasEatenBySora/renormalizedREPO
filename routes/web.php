@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminPanel\AdminController;
 use App\Http\Middleware\RoleMiddleWare;
 use App\Http\Controllers\ResidentPanel\ResidentController;
 use App\Http\Controllers\AdminPanel\documentController;
+use App\Http\Controllers\AdminPanel\requestRecordController;
 use App\Http\Controllers\AdminPanel\requirementController;
 use App\Http\Controllers\base_residentController;
 
@@ -46,6 +47,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/requirementss/create',[requirementController::class,'create'])->name('admin.create_requirement');
     Route::get('/admin/requirementss/create/store',[requirementController::class,'store'])->name('admin.store_requirement');
    
+
+    Route::get('/admin/requests',[requestRecordController::class,'index'])->name('admin.list_requests');
+    Route::get('/admin/requests/view_requests',[documentController::class,'check'])->name('admin.view_request');
+    Route::get('/admin/requests/view_requests/modify',[documentController::class,'update'])->name('admin.modify_request');
    
     Route::get('/resident/home',[base_residentController::class,'index'])->name('resident.home');
 
