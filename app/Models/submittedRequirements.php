@@ -11,20 +11,16 @@ class submittedRequirements extends Model
     
     protected $fillable =[
         'id',
-        'from_request_id',
-        'for_document_id',
-        'for_requirement_id' 
+        'for_request_id',
+        'for_requirement_id',
+        'requirement_filepath' 
     ];
 
-    public function from_request_id()
+    public function for_request_id()
     {
         return $this->belongsTo(requestRecord::class, 'id');
     }
-
-    public function for_document_id()
-    {
-        return $this->belongsTo(barangayDocument::class, 'id');
-    }
+ 
 
     public function for_requirement_id()
     {

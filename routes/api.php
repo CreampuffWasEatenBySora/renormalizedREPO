@@ -35,6 +35,7 @@ Route::post('/fetchDocuments', [documentControllerAPI::class, 'fetch']);
 
 
 Route::post('/fetchRequests', [requestControllerAPI::class, 'fetch']);
+Route::post('/storeRequest', [requestControllerAPI::class, 'store']);
 Route::post('/updateRequest',[requestApiController::class, 'updateRequestRecord']);
 
 

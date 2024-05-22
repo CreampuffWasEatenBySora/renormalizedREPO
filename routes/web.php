@@ -49,7 +49,7 @@ Route::middleware('auth')->group(function () {
    
 
     Route::get('/admin/requests',[requestRecordController::class,'index'])->name('admin.list_requests');
-    Route::get('/admin/requests/view_requests',[documentController::class,'check'])->name('admin.view_request');
+    Route::get('/admin/requests/view_requests',[requestRecordController::class,'check'])->name('admin.view_request');
     Route::get('/admin/requests/view_requests/modify',[documentController::class,'update'])->name('admin.modify_request');
    
     Route::get('/resident/home',[base_residentController::class,'index'])->name('resident.home');

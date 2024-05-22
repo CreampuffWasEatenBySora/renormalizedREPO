@@ -11,6 +11,7 @@ class requestRecord extends Model
 
     protected $fillable =[
         'id',
+        'request_code',
         'resident_id',
         'barangay_officer_id',
         'date_requested',

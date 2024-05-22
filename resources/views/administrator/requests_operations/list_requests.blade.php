@@ -55,7 +55,7 @@
     </div>
 
     <div class="approval-container">
-      <form action= "{{ route('admin.view_resident') }}" method="get">
+      <form action= "{{ route('admin.view_request') }}" method="get">
         <input  style="display: none" id="request_id" name="request_id" type="text">
         <button  type="submit">
           Proceed for Approval
@@ -112,7 +112,7 @@ var Status = "PEN";
 console.log(jsonData);
 // Get a reference to the table body
 var tableBody = document.getElementById('resident-table').getElementsByTagName('tbody')[0];
-let resident_id = document.getElementById('request_id');
+let request_id = document.getElementById('request_id');
 let pageheader = document.getElementById('page-header');
 let request_regdate = document.getElementById('regdate');
 let requestee_name = document.getElementById('name');
@@ -179,7 +179,7 @@ function fillTable(data, status) {
             request_regdate.textContent = reg.concat(": ", request.Requested_on);
             requestee_name.textContent = name.concat(": ",request.Requestee) ;
             summmarized_reqDocument_list.textContent = document_list.concat(":", document_items );
-
+            request_id.value = request.id;
           });
 
           // Insert cells into the row and populate them with data
