@@ -3,7 +3,16 @@
 @section('content')
 
 @php
+  $requirement_data = [];
+
+ foreach ( $request_data[0]['requirements'] as $requirement) {
    
+   $requirement['requirement_filepath'] =  Storage::url($requirement['requirement_filepath']); 
+   
+   array_push($requirement_data, $requirement);
+
+  }
+
 @endphp
 
 
@@ -11,63 +20,78 @@
 <div class="resident-container">
    <div class="content-header">
 
-      <h3>{{ $data[0]['resident_name']}}'s Details</h3>
+      <h3>{{ $request_data[0]['requestDetails']['requestee']}}'s Request</h3>
     
     </div>
 <div class="resident-detail-container">
 
    <div class="resident-detail-box">
    <div class="detail-section">
-      <p> Account Status: 
+      <p> Request Status: 
          @php
             
-            switch (  $data[0]['status'] ) {
-            case 'N':
-               echo 'New Account';
-               break;
+            switch (  $request_data[0]['requestDetails']['status'] ) {
             
-            case 'P':
+            case 'PEN':
                echo 'Pending for Approval';
                break;
 
-            case 'R':
-               echo 'Rejected';
+            case 'APR':
+               echo 'Approved for Collection';
+               break;
+
+            case 'REJ':
+               echo 'Rejected Request';
                break;
 
             default:
-               echo 'Active resident';
+               echo 'Pending for Approval';
                break;
          }
          @endphp
       
          
            </p>
-      <p> Name: {{$data[0]['resident_name'] }}</p>
-      <p> Birthday: {{$data[0]['birthday'] }}</p></p>
-   </div>
+      <p> Requested on: {{$request_data[0]['requestDetails']['dateRequested'] }}</p>
+      <p> Documents Requested: 
+         
+         @php
+            {  
+               
+               echo count($request_data[0]['requested_doc']);
+               
+            }
+         @endphp
+
+        
+      
+   
+   
+   </p></p>
+   
+
+</div>
 
    <div class="detail-section">
        
-      <p> Email: {{$data[0]['email'] }}</p>
-      <p> Address: {{ $data[0]['municipality'].", ".$data[0]['subdivision_district'].", ". $data[0]['barangay'].", ". $data[0]['house_number']}}</p>
-      <p> PhoneNumber: {{$data[0]['phone_number'] }}</p></p>
    </div>
 
 
    <div class="detail-section">
        
-      <p> Registered on: {{$data[0]['date_registered'] }}</p>
+      {{-- <p> Registered on: {{$request_data[0]['date_registered'] }}</p>
       <p> Responded by: 
       @php
-         if ( $data[0]['Barangay Officer'] == null) {
+         if ( $request_data[0]['Barangay Officer'] == null) {
             echo "Waiting for approval";
          } else {
-            echo $data[0]['Barangay Officer'];
+            echo $request_data[0]['Barangay Officer'];
          }
       @endphp   
       
       </p>
-      <p> Remarks: {{ $data[0]['remarks'] }}</p> 
+      <p> Remarks: {{ $request_data[0]['remarks'] }}</p> 
+    --}}
    </div>
 
 
@@ -75,143 +99,298 @@
 
    <div class="resident-side-box">
       
-   
-    @if ( $data[0]['status'] == 'V' )
-         
-      <div class="resident-stats-window">
-         <div class="stat-header">
-            <h3>Resident's stats</h3>
-         </div>
-         <div class="stat-box">
-            <div class="box-header">
-            <h3>Requests</h3>   
-            </div>      
-            <div class="stat-container">
-               <div class="stat">
-                  <p>Rejected:</p>
-                  <p id="collectedRequests"></p>
-               </div>
-               <div class="stat">
-                  <p>Current:</p>
-                  <p id="collectedRequests"></p>
-               </div>
-               <div class="stat">
-                  <p>Approved:</p>
-                  <p id="collectedRequests"></p>
-               </div>
-            </div>
-         </div>
+<div class="request-table-container">
+     
+   <h3>Submitted Requirements:</h3>
 
-         <div class="stat-box">
-            <div class="box-header">
-            <h3>Collections</h3>   
-            </div>      
-            <div class="stat-container">
-               <div class="stat">
-                  <p>Uncollected:</p>
-                  <p id="collectedRequests"></p>
-               </div>
-               <div class="stat">
-                  <p>Collected:</p>
-                  <p id="collectedRequests"></p>
-               </div>
-            </div>
-         </div>
-
-         <div class="stat-box">
-            <div class="box-header">
-            <h3>Most recent transactions</h3>   
-            </div>      
-            <div class="stat-container">
-               <table>
-                  <thead>
-                     <tr>transaction</tr>
-                  </thead>
-                  <tbody>
-                     <tr> <td>some transaction</td></tr>
-                  </tbody>
-               </table>
-            </div>
-         </div>
+   <table class="document-table" id="requirement-table">
+     <thead>
+       <th>Requirement</th>
+       <th>Requirement file</th>
+     </thead>
+      <tbody>
+      </tbody>
+   </table>
+ </div>
 
 
-      </div>
-         
-      @elseif ($data[0]['status'] == 'N')
-      <div class="verification-window">
-        
-         <div class="verification-header">
-            <p>Submitted document: {{ $data[0]['requirement_type']}}</p>
-            
-         <div class="verification-buttons">
-            <form action= "{{ route('admin.verify_resident') }}" method="get">
-               <input  style="display: none" id="resident_uuid" name="resident_uuid" value="{{ $data[0]['UUID'] }}" type="text">
-               <input  style="display: none" name="approval_status" value="V" type="text">
-               <input  style="display: none" name="approval_remarks" value="Verified" type="text">
-               <button  type="submit">
-                 Approve
-               </button>
-             </form>
+      
+<div class="request-table-container">
+     
+   <h3>Requested Documents:</h3>
 
-             <form action= "{{ route('admin.verify_resident') }}" method="get">
-               <input  style="display: none" id="resident_uuid" name="resident_uuid"  value="{{ $data[0]['UUID'] }}" type="text">
-               <input  style="display: none" name="approval_status" value="R" type="text">
-               <input  style="display: none" name="approval_remarks" value="Rejected" type="text">
-               <button  type="submit">
-                  Reject
-               </button>
-             </form>
-         </div>
-
-         </div>
-         
-         <div class="verification-images-container">
-            <div class="selfie">
-               <a href="
-               @php
-               $document_filepath = $data[0]['document_filepath'];
-               $document_filepath =  Storage::url($document_filepath);
-                echo asset( $document_filepath);
-               @endphp
-               " target="_blank" rel="noopener noreferrer">
-               <img src="
-               @php
-               $document_filepath = $data[0]['document_filepath'];
-               $document_filepath =  Storage::url($document_filepath);
-                echo asset( $document_filepath);
-               @endphp
-               " alt="" class="verification-image" alt="selfie">
-            </a>
-            </div>
-            <div class="document">
-               <a href="
-               @php
-               $selfie_filepath = $data[0]['selfie_filepath'];
-               $selfie_filepath =  Storage::url($selfie_filepath);
-                echo asset( $selfie_filepath);
-               @endphp
-               " target="_blank" rel="noopener noreferrer">
-               <img src="
-               @php
-               $selfie_filepath = $data[0]['selfie_filepath'];
-               $selfie_filepath =  Storage::url($selfie_filepath);
-                echo asset( $selfie_filepath);
-               @endphp
-               "  alt="" class="verification-image" alt="document">
-            </a>
-            </div>
-         </div>
-
-      </div>
-      @else
-      <h1>User is rejected</h1>
-      @endif
-   
-
+   <table class="document-table" id="document-table">
+     <thead>
+       <th>Document</th>
+       <th>Purpose</th>
+       <th>Requested Quantity</th>
+       <th>Grant Status</th>
+     </thead>
+      <tbody>
+      </tbody>
+   </table>
+ </div>
 
 
    </div>
    
 </div>
 </div>
+
+<script>
+
+
+   var requirementTableBody = document.getElementById('requirement-table').getElementsByTagName('tbody')[0];
+   var requestedDocTableBody = document.getElementById('document-table').getElementsByTagName('tbody')[0];
+   const requiremenTable = document.getElementById('document-table');
+   const requestedDocumentTable = document.getElementById('document-table');
+   
+   
+   var requirementList =    @json($requirement_data);
+   var requestedDocumentList =  @json($request_data[0]['requested_doc']);
+   
+ 
+
+   var selectedReqsArr = [];
+    
+
+   
+     console.log(requirementList );
+     console.log(requestedDocumentList);
+   
+   // const edit_button = document.getElementById("enable-edit-button");
+   // const save_button = document.getElementById("save-edit-button");
+   // const cancel_button = document.getElementById("cancel-edit-button");
+   // const edit_buttons_box = document.getElementById("edit-buttons-box");
+   // const requirement_menu = document.getElementById('requirement_menu');
+   // const add_requirement_button = document.getElementById('add-requirement-button');
+   // const document_details = document.getElementById("detail-form");
+   // const document_edit_details = document.getElementById("edit-form");
+   // const document_id= document.getElementById('document_id');
+   // const document_name = document.getElementById('document_name');
+   // const document_desc = document.getElementById('document_desc');
+   
+   // function assignRequirements() {
+     
+   
+   //   for (let i = 0; i < requirementsMasterList.length; i++) {
+       
+   //     var selected = false;
+   
+   //     for (let j = 0; j < selectedRequirementsList.length; j++) {
+   
+   //         if (selectedRequirementsList[j]['id'] == requirementsMasterList[i]['id']) {
+           
+   //           selected = true;
+   
+   //         }
+   //     }
+   
+   //     if (selected) {
+   //       fillTable(requirementsMasterList[i], i, false)
+   //     } else {
+   //       fillRequirementes(requirementsMasterList[i]['name'], i);
+   
+   //     }
+   //   }
+   
+     
+             
+   
+   
+      
+   // }
+   
+   // assignRequirements();
+   
+   
+   
+   // function fillRequirementes(name, index) {
+      
+   //       const requirementOption = document.createElement("option");      
+   //       requirementOption.value = index;
+   //       requirementOption.textContent = name;
+   //       requirement_menu.add(requirementOption);
+       
+   // }
+    
+   // // fillRequirementes(unselected_requirements_array);
+          
+   function fillRequirementTable(requirements) {
+                 
+      requirements.forEach(requirement => {
+
+         var row = requirementTableBody.insertRow();
+         
+         // Insert cells into the row and populate them with data
+         var cell1 = row.insertCell(0);
+         cell1.innerHTML = requirement['name'];
+
+         var cell2 = row.insertCell(1);
+
+         var link = document.createElement('a');
+                link.href = "http://localhost/example-app/public"+requirement['requirement_filepath'];
+                link.innerHTML = "View File";
+                cell2.appendChild(link);
+         
+         // var cell3= row.insertCell(2);
+         // cell3.innerHTML = "X";
+
+         // if (editing) {
+         // cell3.style.display ="block";
+         // } else {
+         // cell3.style.display ="none";
+         // }
+
+
+         // //assign an onclick function to the row:
+         // cell3.classList.add('resident-clickable-row');
+         // cell3.classList.add('remove-requirement');
+         // cell3.addEventListener('click', function () {
+         //    fillRemoveRequirement( requirement['name'], row, index)});   
+         // selectedReqsArr.push(index);
+         // console.log("Selected documents:" + selectedReqsArr);
+         
+      });
+   
+   }
+
+
+   function fillDocumentTable(documents) {
+                 
+                documents.forEach(document => {
+           
+                    var row =  requestedDocTableBody.insertRow();
+                    
+                    // Insert cells into the row and populate them with data
+                    var cell1 = row.insertCell(0);
+                    cell1.innerHTML = document['docName'];
+           
+                    var cell2 = row.insertCell(1);
+                    cell2.innerHTML =   document['request_reason']; 
+                          
+                    var cell3= row.insertCell(2);
+                    cell3.innerHTML =  document['request_quantity']; 
+
+                    var cell4= row.insertCell(3);
+                    cell4.innerHTML = "X";
+           
+                    // if (editing) {
+                    // cell3.style.display ="block";
+                    // } else {
+                    // cell3.style.display ="none";
+                    // }
+           
+           
+                    // //assign an onclick function to the row:
+                    // cell3.classList.add('resident-clickable-row');
+                    // cell3.classList.add('remove-requirement');
+                    // cell3.addEventListener('click', function () {
+                    //    fillRemoveRequirement( requirement['name'], row, index)});   
+                    // selectedReqsArr.push(index);
+                    // console.log("Selected documents:" + selectedReqsArr);
+                    
+                 });
+              
+              }
+   
+   fillRequirementTable(requirementList);
+   fillDocumentTable(requestedDocumentList);
+   
+     
+   //   function fillRemoveRequirement(name, row, index) {
+                     
+   //                   // Handle row click event here
+   //                   table.deleteRow(row.rowIndex);
+   //                   var requirementRemoval = selectedReqsArr.indexOf(index);
+   //                   selectedReqsArr.splice(requirementRemoval, 1);
+   //                   fillRequirementes(name, index);            
+   
+   //                   console.log("Selected documents:" + selectedReqsArr);
+   
+   
+     
+   //             }
+   
+   
+   
+   
+   //         edit_button.addEventListener('click', function() {
+               
+   //             var remove_requirment_cells = document.querySelectorAll('.remove-requirement');
+   //             edit_buttons_box.style.display = 'block';
+   //             document_edit_details.style.display ='block';
+   //             edit_button.style.display = 'none';
+   //             document_details.style.display ='none';
+               
+   //             remove_requirment_cells.forEach(function(element) {
+                 
+   //               element.style.display ='block';
+   
+   //             });
+   
+   //         });
+   
+   
+   //         cancel_button.addEventListener('click', function() {
+    
+   //             // Refresh the page
+   //             location.reload();
+   //         });
+   
+   
+   //         add_requirement_button.addEventListener('click', function () {
+             
+   //           var index = requirement_menu.options[requirement_menu.selectedIndex].value;
+             
+   //           fillTable(requirementsMasterList[index], index, true);
+             
+   //           requirement_menu.remove(requirement_menu.selectedIndex);
+              
+   //         });
+   
+   //         save_button.addEventListener('click', function name(params) {
+   
+   
+             
+   //               documentJson = {documentDetails: {
+   //                           id:document_id.value,
+   //                           name:document_name.value,
+   //                           desc:document_desc.value}, 
+   //                           requirements: {}};
+   
+   //                 for (var k = 0; k < selectedReqsArr.length; k++) {
+   //                 var objName = 'req' + k;
+   //                 var objValue = requirementsMasterList[k]['id'];
+   //                 documentJson.requirements[objName] = objValue;
+   //                 }
+   
+   
+   //               var jsonData = JSON.stringify(documentJson);
+   
+   
+   //                 $.ajax({
+   //                     url: "{{ route('admin.modify_document') }}",
+   //                     type: "GET",
+   //                     data: { documentArray: jsonData },
+   //                     success: function(response) {
+   //                         console.log("Data sent successfully");
+   //                         window.location.replace("{{  route('admin.view_document')}}?document_id="+document_id.value);
+   //                     },
+   //                     error: function(xhr, status, error) {
+   //                         console.error("Error sending data to server:", error);
+   //                     }
+   //                 });
+   
+   
+             
+   //         })
+   
+           
+   
+   
+   
+   
+      </script>
+
 @endsection

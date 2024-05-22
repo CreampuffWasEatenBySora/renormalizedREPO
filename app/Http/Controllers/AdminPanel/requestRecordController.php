@@ -6,6 +6,7 @@ use App\Models\requestRecord;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 
 class requestRecordController extends Controller
@@ -97,6 +98,7 @@ class requestRecordController extends Controller
               'reqs.id as requestID', 
               'reqs.request_code as requestCode', 
               'reqs.date_requested as dateRequested', 
+              'resident.fullName as requestee', 
               'officer.fullName as officerName', 
               'reqs.date_responded as dateResponded', 
               'reqs.remarks as remarks',
@@ -110,7 +112,9 @@ class requestRecordController extends Controller
             ;
 
             $request = $query->first();
+            $array = json_decode(json_encode($request ), true);
               
+            $request_entry['request']['requestDetails']= $array;
  
                   $requestedDocuments_query = DB::table('requested_documents as doc_reqs')
                   ->select(
@@ -141,8 +145,8 @@ class requestRecordController extends Controller
 
                   $b = 0;
                   foreach ($requirements as $requirement) {
-
-                      $array = json_decode(json_encode($requirement), true);
+                 
+                    $array = json_decode(json_encode($requirement), true);
                       $request_entry['request']['requirements'][$b] = $array;
                       $b++;
                   }
@@ -152,13 +156,13 @@ class requestRecordController extends Controller
 
               $jsonData = json_encode($requestData);
 
-            Log::info($requestData);  // Debug statement
-            return response()->json(['status' => 'success', 'message' => 'Logged in successfully!', 'request_data' => json_decode($jsonData) ], 200);
+       //     Log::info($requestData);  // Debug statement
+            return view('administrator.requests_operations.view_request')->with('request_data', json_decode($jsonData, true));
      
         } catch (\Throwable $th) {
 
             Log::info("Error in retrieving document data from database: ".$th);  // Debug statement
-            return response()->json(['status' => 'failure', 'message' => 'Invalid login credentials. Try again.'], 200);
+            return response()->json(['status' => 'failure', 'message' => 'Error.:'.$th.' Please Try again.'], 200);
      
         }
 
