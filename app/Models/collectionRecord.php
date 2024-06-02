@@ -13,6 +13,7 @@ class collectionRecord extends Model
     protected $fillable =[
         'id',
         'request_id',
+        'barangay_officer_id',
         'date_granted',
         'date_scheduled',
         'date_collected',

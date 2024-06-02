@@ -16,6 +16,7 @@ return new class extends Migration
 
             // Foreign Keys
             $table->unsignedBigInteger('request_id');
+            $table->string('barangay_officer_id');
             
             // Table-unique keys
             $table->timestamp('date_granted')-> useCurrent();
@@ -31,7 +32,10 @@ return new class extends Migration
                    -> on('request_records') 
                    -> onDelete('cascade');
  
-                    
+            $table -> foreign('barangay_officer_id')
+                   -> references('UUID') 
+                   -> on('barangay_residents') 
+                   -> onDelete('cascade');
         });
     }
 

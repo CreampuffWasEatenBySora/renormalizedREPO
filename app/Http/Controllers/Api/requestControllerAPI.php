@@ -11,41 +11,20 @@ use App\Http\Controllers\Controller;
 use App\Models\personalAccessToken;
 use App\Models\requestedDocument;
 use App\Models\requestRecord;
-use App\Models\submittedRequirements;
+use App\Models\submittedRequirements; 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
 use Nette\Utils\Arrays;
 
 class requestControllerAPI extends Controller
 {
     
 
-    static function validateAccessKey($accesskey) : Bool{
-        
-        $token = personalAccessToken::where('token', $accesskey)->first();
+    
 
 
-        if ($token != null) {
-            Log::info("token found:".$token);  // Debug statement
-
-            if ($token->expires_at < now()) {
-            Log::info("expired...");  // Debug statement
-            return false;
-
-            } else{
-                Log::info("fine token");  // Debug statement
-                return true;
-            }
-
-        } else {
-            Log::info("no token found");  // Debug statement
-            return false;
-        }
-
-
-    }
-
-    static function storeFiles(Request $request, $requestID) : array {
-        $fileArray = [];
+    static function storeFiles(Request $request, $requestID){
         
         foreach ($request->all() as $key => $value) {
             if ($request->hasFile($key)) {
@@ -53,15 +32,16 @@ class requestControllerAPI extends Controller
                 
                 try {
                   
-                    Log::info($requestID);  // Debug statement
             
                 // Get the original filename
                 $originalFilename = $value->getClientOriginalName();
                 $parts = explode(".", $originalFilename); // The requirement ID comes from the name of the file.
 
-                       $filename =  $request->input('requestCode')."-".uniqid()."-".$originalFilename;
-                       $value->move(public_path('storage/requirement_images'), $filename);
-                       $path =  "requirement_images/".$filename;
+                       $filename = uniqid().".jpg" ;
+ 
+                        $path = $value->storeAs(
+                            'requirementImages/'.$request->input('requestCode'), $filename, 'private'
+                        );
                         Log::info($filename. " Uploaded to: ". $path);  // Debug statement
 
                         
@@ -69,12 +49,11 @@ class requestControllerAPI extends Controller
                                                 
                             'for_request_id' =>  $requestID,
                             'for_requirement_id' =>   $parts[0], 
-                            'requirement_filepath' => $path
+                            'requirement_filename' => $filename 
 
                         ]);
 
                                        
-                array_push($fileArray, $path);
                     
                 } catch (\Throwable $th) {
                     Log::info("Requirement upload error: " . $th);  // Debug statement
@@ -86,21 +65,63 @@ class requestControllerAPI extends Controller
             }
 
 
-        return $fileArray;
     }
+
+    
+    static function fetchFileURLs(Request $request)  {
+        $fileArray = [];
+        $requestID = $request->input('requestID');
+        $requestCode = $request->input('requestCode');
+        $UUID = $request->input('userID');
+        $accesskey = $request->input('accessKey');
+        
+            if (AuthenticationControllerAPI::validateAccessKey($UUID,$accesskey)) {
+              
+                $submuittedRequirements = DB::table('submitted_requirements as sub_req')
+                ->select('sub_req.*','req.id','req.name','req.description'  )
+                ->join('document_requirements as req', 'sub_req.for_requirement_id', '=', 'req.id')
+                ->where('for_request_id',$requestID)->get();
+    
+                foreach ($submuittedRequirements as $requirement) {
+                    $fileDetails = [];
+                    $filePath =  "requirementImages/".$requestCode."/".$requirement->requirement_filename;
+                    $fileDetails['requirementId'] = $requirement->id ;
+                    $fileDetails['requirementName'] = $requirement->name ;
+                    $fileDetails['requirementDesc'] = $requirement->description ;
+
+                    
+                    if (Storage::disk('private')->exists($filePath)) {
+                        // Generate a URL for the file
+                        $filePath =   "http://192.168.56.1/example-app/storage".'/app/private/'.$filePath;
+                        $fileDetails['filePath'] = $filePath;
+                        Log::info( $filePath);  // Debug statement
+
+                        array_push($fileArray,$fileDetails);
+    
+                    } 
+                }
+
+            }
+            $jsonData = json_encode($fileArray);
+           
+            return response()->json(['status' => 'success', 'message' => 'URLs retrieved successfully!', 'requirement_URLs' => json_decode($jsonData) ], 200);
+        
+    }
+
+
 
 
     public function fetch(Request $request){
 
 
-           
-
         try {
      
             $UUID = $request->input('userID');
+            $requestID = $request->input('requestID');
             Log::info($request);  // Debug statement
             $requestData = [];
             $requirementImages = [];
+
 
             $query = DB::table('request_records as reqs')
             -> select(
@@ -116,11 +137,12 @@ class requestControllerAPI extends Controller
             )     
             ->join('barangay_residents as resident', 'resident.UUID', '=', 'reqs.resident_id')
             ->leftJoin('barangay_residents as officer', 'officer.UUID', '=', 'reqs.barangay_officer_id')
-          ->where('reqs.resident_id', $UUID)
+            ->where('reqs.resident_id', $UUID)
             
             ;
 
-            $requests = $query->get();
+                $requests = $query->get();
+            
               
               foreach ($requests as $request) {
 
@@ -140,14 +162,21 @@ class requestControllerAPI extends Controller
 
                       $array = json_decode(json_encode($requestedDocument), true);
                       $request_entry['request']['requested_doc'][$i] = $array;
-                      
                       $i++;
+
+
                   }
                   
+               
+
                   array_push($requestData, $request_entry['request']);
               }
 
+
+             
+
               $jsonData = json_encode($requestData);
+              Log::info($requestData);  // Debug statement
 
             // Log::info($requestData);  // Debug statement
             return response()->json(['status' => 'success', 'message' => 'Logged in successfully!', 'request_data' => json_decode($jsonData) ], 200);
@@ -168,11 +197,11 @@ class requestControllerAPI extends Controller
 
         
         Log::info($request);  // Debug statement
+ 
+        $UUID =  $request->input('requesterID');
+        $accesskey = $request->input('accessKey');
 
-
-
-
-        if (requestControllerApi::validateAccessKey($request->input('accessKey'))) {
+        if (AuthenticationControllerAPI::validateAccessKey($UUID, $accesskey)) {
           
            $newRequest =  requestRecord::create([
 
@@ -210,10 +239,10 @@ class requestControllerAPI extends Controller
  
 
         if ($request != null) {
-            return response()->json(['status' => 'success', 'message' => 'Logged in successfully!'  ], 200);
+            return response()->json(['status' => 'success', 'message' => 'Request submitted successfully!'  ], 200);
 
         } else {
-            return response()->json(['status' => 'error', 'message' => 'Logged in successfully!'  ], 500);
+            return response()->json(['status' => 'error', 'message' => 'Request submitted unsuccessfully...'  ], 500);
         }
 
     } else {

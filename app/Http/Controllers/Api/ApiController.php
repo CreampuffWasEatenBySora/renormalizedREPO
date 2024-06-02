@@ -114,48 +114,36 @@ class ApiController extends Controller
 
                     $newRegistration = registration::find($regId);
                     // Log::info("Imagefound:" . $key . " - " .$value);  // Debug statement
-                    
-
-                    if (Str::contains($originalFilename, 'REG')) {
-                        
-                        $path = $value->move(public_path('registration_images'), $originalFilename);
+                                            
 
                         if ( Str::contains($originalFilename, 'selfie')) {
     
+                            $filename = "SEL".uniqid().".jpg" ;
+ 
+                            $value->storeAs(
+                                'registrationImages/reg-'.$newRegistration->id, $filename, 'private'
+                            );
+     
                             $newRegistration->update([
-                                'selfie_filepath' => $path,
+                                'selfie_filepath' => $filename,
                                 'remarks' => 'For verification'
                             ]);
                             
                         } else {
-                            $newRegistration->update([
-                                'document_filepath' => $path
-                            ]);
-                        }
-                        
-                    } else if (Str::contains($originalFilename, 'REQ')) {
-                       
-                        $path = $value->move(public_path('requirement_images'), $originalFilename);
+     
+                            $filename = "DOC".uniqid().".jpg" ;
+ 
+                            $value->storeAs(
+                                'registrationImages/reg-'.$newRegistration->id, $filename, 'private'
+                            );
+          
 
-                        if ( Str::contains($originalFilename, 'selfie')) {
-    
                             $newRegistration->update([
-                                'selfie_filepath' => $path,
-                                'remarks' => 'For verification'
-                            ]);
-                            
-                        } else {
-                            $newRegistration->update([
-                                'document_filepath' => $path
+                                'document_filepath' => $filename
                             ]);
                         }
                         
 
-                    }  
-
-
-                   
-                   
                 } 
             }
             

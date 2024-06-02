@@ -6,10 +6,10 @@
 
   <div class="content-header">
 
-  <h3 id="page-header">Manage Requests</h3>
+  <h3 id="page-header">Manage Collections</h3>
 
   <div class="searchbar">
-    <form action="{{ route('admin.list_requests') }}" method="get">
+    <form action="{{ route('admin.list_collections') }}" method="get">
     <button>search</button>
     <input type="text" name="searchbox" id="searchbox" :value="old('resident_searchbox')">
    
@@ -48,7 +48,9 @@
   <div class="request-header">
     <div class="request-details-box">
     <div class="request-detail">
-       <p id="regdate" class="detail-regdate">Requested on:</p>  
+       <p id="conDate" class="detail-regdate">Confirmed on:</p>  
+       <p id="schedDate" class="detail-regdate">Collection Scheduled on:</p>  
+       <p id="colDate" class="detail-regdate">Collected on:</p>  
        <p id="name" class="detail-name">Requested by:</p>
        <p id="documents" class="detail-address">Requested Documents:</p>
        
@@ -68,14 +70,14 @@
   <div class="request-status-container">
     
     <div class="request-status-switcher">
-      <div class="request-status-item" onclick='filterStatus("PEN")'>
+      <div class="request-status-item" onclick='filterStatus("TBC")'>
         Pending
       </div>
-      <div class="request-status-item" onclick='filterStatus("APR")'>
-        Approved
+      <div class="request-status-item" onclick='filterStatus("COL")'>
+        Collected
       </div>
-      <div class="request-status-item" onclick='filterStatus("REJ")'>
-        Rejected
+      <div class="request-status-item" onclick='filterStatus("CAN")'>
+        Cancelled
       </div>
     </div>
 
@@ -87,11 +89,13 @@
     <table class="resident-table" id="resident-table">
       <thead>
         <th>Request code</th>
-        <th>Requested on</th>
         <th>Requested by</th>
         <th>Requested documents</th>
-        <th class="barangay-officer">Responded by</th>
-        <th class="barangay-officer">Responded on</th>
+        <th>Confirmed On</th>
+        <th>Scheduled On</th>
+        <th class="barangay-officer">Issued by</th>
+        <th class="barangay-officer">Collected on</th>
+        
       </thead>
        <tbody>
 
@@ -106,18 +110,22 @@
 
 
   // Assume jsonData contains your JSON data
-var json  = JSON.stringify({!! $requests_jsonData!!});
+var json  = JSON.stringify({!! $collections_jsonData!!});
 var jsonData = JSON.parse(json);
-var Status = "PEN";
+var Status = "TBC";
 console.log(jsonData);
 // Get a reference to the table body
 var tableBody = document.getElementById('resident-table').getElementsByTagName('tbody')[0];
 let request_id = document.getElementById('request_id');
 let pageheader = document.getElementById('page-header');
-let request_regdate = document.getElementById('regdate');
+let collection_confirmDate= document.getElementById('conDate');
+let collection_scheduleDate = document.getElementById('schedDate');
+let collection_collectDate = document.getElementById('colDate');
 let requestee_name = document.getElementById('name');
 let summmarized_reqDocument_list = document.getElementById('documents');
-let  reg = request_regdate.textContent;
+let  con = collection_confirmDate.textContent;
+let  sched = collection_scheduleDate.textContent;
+let  col = collection_collectDate.textContent;
 let  name = requestee_name.textContent;
 let  document_list = summmarized_reqDocument_list.textContent;
 
@@ -125,23 +133,23 @@ let  document_list = summmarized_reqDocument_list.textContent;
 function filterStatus(status) {
   
   switch (status) {
-    case "PEN":
+    case "TBC":
       Status = status;
-      pageheader.textContent = "Pending requests"
+      pageheader.textContent = "Pending collections"
       break;
   
-      case "APR":
+      case "COL":
       Status = status;
-      pageheader.textContent = "Approved requests"
+      pageheader.textContent = "Completed collections"
       break;
 
-      case "REJ":
+      case "CAN":
       Status = status;
-      pageheader.textContent = "Rejected requests"
+      pageheader.textContent = "Cancelled collections"
       break;
 
     default:
-      pageheader.textContent = "Manage requests"
+      pageheader.textContent = "Pending Collections"
       break;
   }
 
@@ -151,20 +159,22 @@ function filterStatus(status) {
 }
 
 function fillTable(data, status) {
- // console.log(data);
       
       
     // Iterate over each entry in the JSON data
-    data.forEach(function(request) {
+    data.forEach(function(collection) {
 
-      if (status == request.Status) {
-        
+      console.log("statuses:");
+      console.log(collection.Status + " " + status);
 
-        requestedDocuments =  request.requested_doc;
+      if (status == collection.Status) {
+       
+
+        requestedDocuments =  collection.requested_doc;
       var document_items = "";      
       requestedDocuments.forEach(element => {
       document_items =  document_items.concat(" | ", element.docName," | ");
-
+    
       });
 
 
@@ -176,32 +186,37 @@ function fillTable(data, status) {
           row.addEventListener('click', function() {
             
             // Handle row click event here
-            request_regdate.textContent = reg.concat(": ", request.Requested_on);
-            requestee_name.textContent = name.concat(": ",request.Requestee) ;
+            collection_confirmDate.textContent = con.concat(": ", collection.confirmed_on);
+            collection_scheduleDate .textContent = sched.concat(": ", collection.scheduled_on);
+            collection_collectDate.textContent = col.concat(": ", collection.collected_on); 
+            requestee_name.textContent = name.concat(": ",collection.Requestee) ;
             summmarized_reqDocument_list.textContent = document_list.concat(":", document_items );
-            request_id.value = request.id;
+            request_id.value = collection.id;
           });
 
           // Insert cells into the row and populate them with data
 
 
           var cell1 = row.insertCell(0);
-          cell1.innerHTML = request.Request_code;
+          cell1.innerHTML = collection.Request_code;
           
           var cell2 = row.insertCell(1);
-          cell2.innerHTML = request.Requested_on;
+          cell2.innerHTML = collection.Requestee;
 
           var cell3 = row.insertCell(2);
-          cell3.innerHTML = request.Requestee;
+          cell3.innerHTML = document_items;
 
           var cell4 = row.insertCell(3);
-          cell4.innerHTML = document_items;
+          cell4.innerHTML = collection.confirmed_on;
 
           var cell5 = row.insertCell(4);
-          cell5.innerHTML = request.Responded_by;
+          cell5.innerHTML = collection.scheduled_on;
  
           var cell6 = row.insertCell(5);
-          cell6.innerHTML = request.Responded_on;
+          cell6.innerHTML = collection.Issued_by;
+ 
+          var cell7 = row.insertCell(5);
+          cell6.innerHTML = collection.collected_on;
  
 
       }
@@ -210,7 +225,7 @@ function fillTable(data, status) {
 
     }
 
-    fillTable(jsonData, "PEN");
+    fillTable(jsonData, "TBC");
 
 
 let sort_order_button = document.getElementById('sort-button');

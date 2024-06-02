@@ -428,6 +428,21 @@ input::-webkit-inner-spin-button {
 .resident-stats-window .stat-box h3{
   margin: 0;
 }
+
+
+.detail-section{
+  display: flex;
+  flex-direction: column;
+}
+
+
+.detail-section button, textarea{
+
+
+  height: 50%;
+  padding:2vh;
+
+}
  
 .stat-container{
   /* border: 1px black solid; */

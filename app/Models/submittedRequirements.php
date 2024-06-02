@@ -13,7 +13,7 @@ class submittedRequirements extends Model
         'id',
         'for_request_id',
         'for_requirement_id',
-        'requirement_filepath' 
+        'requirement_filename' 
     ];
 
     public function for_request_id()

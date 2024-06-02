@@ -42,6 +42,31 @@ class AuthenticationControllerAPI extends Controller
 
     }
 
+    public static  function validateAccessKey($UUID, $accesskey) : Bool{
+        
+        $token = personalAccessToken::where(['token'=> $accesskey, 'tokenable_type' => $UUID])->first();
+
+
+        if ($token != null) {
+            Log::info("token found:".$token);  // Debug statement
+
+            if ($token->expires_at < now()) {
+            Log::info("expired...");  // Debug statement
+            return false;
+
+            } else{
+                Log::info("fine token");  // Debug statement
+                return true;
+            }
+
+        } else {
+            Log::info("no token found");  // Debug statement
+            return false;
+        }
+
+
+    }
+
 
     public function getUserToken($apiKey, $UUID, $id) : Request{
         
@@ -52,13 +77,13 @@ class AuthenticationControllerAPI extends Controller
             $user_token = personalAccessToken::where('tokenable_id', $id)
             ->where('tokenable_type',$UUID)->first(); 
 
-            Log::info("User token: ".$user_token);  // Debug statement
+            // Log::info("User token: ".$user_token);  // Debug statement
 
 
 
             if ( $user_token != null) {
                 
-                    Log::info("User token: ".$user_token);  // Debug statement
+                    // Log::info("DETECTED User token: ".$user_token);  // Debug statement
 
                     if (date($user_token['expires_at']) > now()) {
 

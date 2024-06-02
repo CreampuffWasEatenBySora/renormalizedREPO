@@ -15,8 +15,8 @@ class registration extends Model
         'date_responded',
         'remarks',
         'requirement_type',
-        'selfie_filepath',
-        'document_filepath',
+        'selfie_filename',
+        'document_filename',
         'resident_id',
         'barangay_officer_id'
         

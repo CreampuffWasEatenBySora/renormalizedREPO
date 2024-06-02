@@ -4,11 +4,12 @@ namespace App\Http\Controllers\AdminPanel;
 
 use App\Models\requestRecord;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 class requestRecordController extends Controller
 {
     /**
@@ -169,6 +170,7 @@ class requestRecordController extends Controller
      
 
     }
+ 
 
 
     /**
@@ -206,9 +208,71 @@ class requestRecordController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, requestRecord $requestRecord)
+    public function update(Request $request )
     {
-        //
+        
+        
+        $jsonData = $request->input('requestArray');
+      
+        // Decode JSON data to PHP array
+        $arrayData = json_decode($jsonData, true);
+ 
+
+        $requestDetails= $arrayData['requestDetails'];
+        $requestId = $requestDetails['id'];
+        $requestStatus =$requestDetails['status'];
+        $requestRemarks =$requestDetails['remarks'];
+        $requestDocuments_granted = $arrayData['documents'];
+        
+        Log::info($requestDocuments_granted );
+
+
+        try {
+        
+            DB::table('request_records')
+            ->where('id', $requestId)
+            ->update(['barangay_officer_id' => Auth::user()->UUID,
+              'date_responded' => now(), 'status' =>  $requestStatus,
+              'remarks' => $requestRemarks]);
+
+            $requestedDocs = DB::table('requested_documents')
+              ->where('for_request_id', $requestId)->get();
+            
+              foreach ($requestedDocs as $document) {
+ 
+
+                    if (in_array($document->id, $requestDocuments_granted) && $requestStatus != 'REJ') {
+
+                        DB::table('requested_documents')
+                        ->where('id', $document->id)
+                        ->update(['remarks' => 'Granted', 
+                        'status' => 'APR']);
+    
+                    } else {
+                      
+                        DB::table('requested_documents')
+                        ->where('id', $document->id)
+                        ->update(['remarks' => 'Not Granted',  'status' => 'REJ']);
+    
+                    }
+                 
+            
+                
+              }
+
+
+            return response()->json(['status' => 'success' ], 200);
+            
+            } catch (\Throwable $th) {
+            Log::info("Error in updating request: ".$th);  // Debug statement
+            return response()->json(['status' => 'failed'], 200);
+             
+        }
+          
+
+
+
+
     }
 
     /**

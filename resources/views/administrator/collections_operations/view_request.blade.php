@@ -16,6 +16,7 @@
    <div class="detail-section">
       <p> Request Status: 
          @php
+            
             switch (  $request_data[0]['requestDetails']['status'] ) {
             
             case 'PEN':
@@ -112,9 +113,8 @@
             <tr>
                <td> {{ $requirement['name']; }} </td>
          
-                          
-               <td> <a  href="{{    
-               route('files.get', ['category' => 'REQ', 'categoryCode'=>$request_data[0]['requestDetails']['requestCode'],'fileName' => $requirement['requirement_filename'] ]) }}" target="_blank">View file</a>
+         <td> <a href="{{  asset(Storage::url($requirement['requirement_filepath'])); }}" target="_blank"> View file</a> 
+                        
             
             </td>
            

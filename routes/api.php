@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\AuthenticationControllerAPI;
 use App\Http\Controllers\Api\documentControllerAPI;
 use App\Http\Controllers\Api\requestApiController;
 use App\Http\Controllers\Api\requestControllerAPI;
+use App\Http\Controllers\Api\CollectionControllerAPI;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -37,6 +38,10 @@ Route::post('/fetchDocuments', [documentControllerAPI::class, 'fetch']);
 Route::post('/fetchRequests', [requestControllerAPI::class, 'fetch']);
 Route::post('/storeRequest', [requestControllerAPI::class, 'store']);
 Route::post('/updateRequest',[requestApiController::class, 'updateRequestRecord']);
+Route::post('/getRequirementURLs', [requestControllerAPI::class, 'fetchFileURLs']);
+
+Route::post('/fetchCollections', [CollectionControllerAPI::class, 'fetch']);
+Route::post('/storeCollection', [CollectionControllerAPI::class, 'store']);
 
 
 
