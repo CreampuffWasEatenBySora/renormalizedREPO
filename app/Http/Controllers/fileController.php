@@ -49,11 +49,7 @@ class fileController extends Controller
         $path = Storage::path('private\\'.$filePath);
         // Get the file's mime type
         $mimeType = Storage::mimeType($path);
-
-        Log::info($path);  // Debug statement
-        Log::info($file);  // Debug statement
-
-
+ 
         // Return the file as a response    
         return response()->file($path);
 

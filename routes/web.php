@@ -55,8 +55,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/requests/view_requests/confirm',[requestRecordController::class,'update'])->name('admin.modify_request');
    
     Route::get('/admin/collections',[collectionController::class,'index'])->name('admin.list_collections');
-    Route::get('/admin/requests/view_requests',[requestRecordController::class,'check'])->name('admin.view_request');
-    Route::get('/admin/requests/view_requests/confirm',[requestRecordController::class,'update'])->name('admin.modify_request');
+    Route::get('/admin/requests/view_collection',[collectionController::class,'check'])->name('admin.view_collection');
+    Route::get('/admin/requests/view_collection/confirm',[collectionController::class,'update'])->name('admin.modify_collection');
     
    
     

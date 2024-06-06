@@ -5,9 +5,7 @@ namespace App\Http\Controllers\AdminPanel;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Log;
-use App\Models\barangayDocument;
-use App\Models\document_requirement;
-use App\Models\requirement_listing;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class collectionController extends Controller
@@ -81,86 +79,96 @@ class collectionController extends Controller
         return view('requests.create');
 
     }
-
-    public function store(Request $request) {
-        
-        try {
-               // Retrieve the JSON data from the request
-        $jsonData = $request->input('documentArray');
-      
-        // Decode JSON data to PHP array
-        $arrayData = json_decode($jsonData, true);
-        $documentData = $arrayData['documentDetails'];
-        $requirementData = $arrayData['requirements'];
-        $current_time = now();
-
-        barangayDocument::create([
-            'name' => $documentData['name'],
-        'description' =>$documentData['desc'],
-        'created_at' => $current_time
-        ]);
-
-        $newDocument  = DB::table("barangay_documents")->where('created_at', $current_time)->first(); 
-        foreach ($requirementData as $key => $value) {
-                
-            requirement_listing::create([
-                'for_document_id' => $newDocument->id,
-                'from_requirement_id' =>$value
-            ]);
-
-            }
  
-            
-            return response()->json(['status' => 'success'], 200);
-
-        } catch (\Throwable $th) {
-        Log::info("JSON not received: ". $th);
-
-            return response()->json(['status' => 'failed'], 200);
-        }
-     
-    }
-
 
     public function check(Request $request) {
         
-        $documentId = $request->input('document_id');
+        try {
+     
+            $collectionData = [];
+            $requirementImages = [];
 
-        $documentData = barangayDocument::find($documentId);
+            $query = DB::table('request_records as reqs')
+            -> select(
 
-        if ($documentData !=null) {
-         
-            //get the full list of requirements
-            $allRequirements = DB::table("document_requirements")->get(); 
-            
+              'collection.id as collectID', 
+              'reqs.id as requestID', 
+              'reqs.request_code as requestCode', 
+              'reqs.date_requested as dateRequested', 
+              'resident.fullName as requestee', 
+              'apprOfficer.fullName as reqAproveOfficerName', 
+              'collectOfficer.fullName as reqAproveOfficerName', 
+              'reqs.date_responded as dateResponded', 
+              'collection.remarks as remarks', 
+              'collection.date_scheduled as dateScheduled', 
+              'collection.date_collected as dateCollected', 
+              'collection.status as status'
 
-            //get the list of the listed requirements
-            $query = 
-            "SELECT doc_req.id 
-            FROM requirement_listings as req_list
-            INNER JOIN barangay_documents as b_docs
-            ON req_list.for_document_id = b_docs.id
-            INNER JOIN document_requirements as doc_req
-            ON req_list.from_requirement_id = doc_req.id
-            WHERE b_docs.id =".$documentId;
+            )     
+            ->join('barangay_residents as resident', 'resident.UUID', '=', 'reqs.resident_id')
+            ->Join('collection_records as collection', 'collection.request_id', '=', 'reqs.id')
+            ->leftJoin('barangay_residents as apprOfficer', 'apprOfficer.UUID', '=', 'reqs.barangay_officer_id')
+            ->leftJoin('barangay_residents as collectOfficer', 'collectOfficer.UUID', '=', 'collection.barangay_officer_id')
+            ->where('collection.id', $request->input('collection_id'))
+            ;
 
-            $resultSet = DB::select($query);
-            $docJsonData = json_encode($documentData);
-            $selected_reqJsonData = json_encode($resultSet);
-            $all_reqJsonData = json_encode($allRequirements);
-
-            
+            $collection = $query->first();
+            $array = json_decode(json_encode($collection), true);
+              
+            $collection_entry['collection']['collectionDetails']= $array;
  
-             
+                  $requestedDocuments_query = DB::table('requested_documents as doc_reqs')
+                  ->select(
+                      'doc_reqs.*',
+                      'document.name as docName'
+                  )
+                  ->join('barangay_documents as document', 'document.id', '=', 'doc_reqs.for_document_id')
+                  ->where('for_request_id', $collection->requestID);
+                  $requestedDocuments = $requestedDocuments_query->get()->toArray();  
+                  
+                  $i = 0;
+                  foreach ($requestedDocuments as $requestedDocument) {
 
-            Log::info("Document Data sent: ".$docJsonData);
-            Log::info("Requirement Data sent: ".$selected_reqJsonData);
-            return view('administrator.document_operations.view_document', ['document_data' => json_decode($docJsonData, true), 
-            'assigned_requirement_IDs' =>json_decode($selected_reqJsonData), 'all_requirements_data' =>json_decode($all_reqJsonData)]);
+                      $array = json_decode(json_encode($requestedDocument), true);
+                      $collection_entry['collection']['requested_doc'][$i] = $array;
+                      $i++;
+                  }
 
-        } else {
-            Log::info("No Data received for document ID: ".$documentId);
+
+                  $requirements_query = DB::table('submitted_requirements as requirement')
+                  ->select(
+                      'requirement.*',
+                      'doc_reqs.name'
+                  )
+                  ->join('document_requirements as doc_reqs', 'doc_reqs.id', '=', 'requirement.for_requirement_id')
+                  ->where('for_request_id', $collection->requestID);
+                  $requirements = $requirements_query->get()->toArray();  
+
+                  $b = 0;
+                  foreach ($requirements as $requirement) {
+                 
+                    $array = json_decode(json_encode($requirement), true);
+                      $collection_entry['collection']['requirements'][$b] = $array;
+                      $b++;
+                  }
+
+                  
+                  array_push($collectionData, $collection_entry['collection']);
+
+              $jsonData = json_encode($collectionData);
+
+            Log::info( $jsonData);  // Debug statement
+            return view('administrator.collections_operations.view_collection')->with('collection_data', json_decode($jsonData, true));
+     
+        } catch (\Throwable $th) {
+
+            Log::info("Error in retrieving document data from database: ".$th);  // Debug statement
+            return response()->json(['status' => 'failure', 'message' => 'Error.:'.$th.' Please Try again.'], 200);
+     
         }
+
+     
+
 
     }
 
@@ -168,52 +176,67 @@ class collectionController extends Controller
     function update(Request $request){
         
 
-        try {
+       
 
-            $jsonData = $request->input('documentArray');
+            $jsonData = $request->input('collectionArray');
+            Log::info($jsonData);
       
             // Decode JSON data to PHP array
             $arrayData = json_decode($jsonData, true);
 
-            Log::info($arrayData);
-
-            $documentData = $arrayData['documentDetails'];
-            $requirementData = $arrayData['requirements'];
 
 
+            $collectionDetails= $arrayData['collectiontDetails'];
+            $collectionId = $collectionDetails['collectionID'];
+            $requestId = $collectionDetails['requestID'];
+            $collectionStatus =$collectionDetails['status'];
+            $collectionRemarks =$collectionDetails['remarks'];
+            $requestDocuments_granted = $arrayData['documents'];
             
-            $newDocument=  barangayDocument::find($documentData['id']);
-
-            if ($newDocument) {
-                $newDocument -> update([
-                    'name' => $documentData['name'],
-                'description' =>$documentData['desc']
-                ]);
+            Log::info($requestDocuments_granted );
     
     
+            try {
+            
+                DB::table('collection_records')
+                ->where('id', $collectionId)
+                ->update(['barangay_officer_id' => Auth::user()->UUID,
+                  'date_collected' => now(), 'remarks' =>$collectionRemarks
+                  ,'status' =>  $collectionStatus ]);
     
-                DB::table("requirement_listings")->where('for_document_id', $documentData['id'])->delete(); 
-    
-                foreach ($requirementData as $key => $value) {
-                    
-                    requirement_listing::create([
-                        'for_document_id' =>  $newDocument ->id,
-                        'from_requirement_id' =>$value
-                    ]);
-        
-                    }
-
-                 return response()->json(['status' => 'success'], 200);
+                $requestedDocs = DB::table('requested_documents')
+                  ->where('for_request_id', $requestId)->get();
                 
+                  foreach ($requestedDocs as $document) {
+    
+                        if (in_array($document->id, $requestDocuments_granted) && $collectionStatus != 'CAN') {
+    
+                            DB::table('requested_documents')
+                            ->where('id', $document->id)
+                            ->update(['remarks' => 'COLLECTED', 
+                            'status' => 'COL']);
+        
+                        } else {
+                          
+                            DB::table('requested_documents')
+                            ->where('id', $document->id)
+                            ->update(['remarks' => 'Collection Cancelled',  'status' => 'CAN']);
+        
+                        }
+                     
+                
+                    
+                  }
+    
+    
+                return response()->json(['status' => 'success' ], 200);
+                
+                } catch (\Throwable $th) {
+                Log::info("Error in updating request: ".$th);  // Debug statement
+                return response()->json(['status' => 'failed'], 200);
+                 
             }
-           
-
-        } catch (\Throwable $th) {
-
-            Log::info("Error: ".$th);
-            return response()->json(['status' => 'failed'], 200);
-
-        }
+              
 
 
         

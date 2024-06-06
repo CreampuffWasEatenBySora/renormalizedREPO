@@ -57,8 +57,8 @@
     </div>
 
     <div class="approval-container">
-      <form action= "{{ route('admin.view_request') }}" method="get">
-        <input  style="display: none" id="request_id" name="request_id" type="text">
+      <form action= "{{ route('admin.view_collection') }}" method="get">
+        <input  style="display: none" id="collection_id" name="collection_id" type="text">
         <button  type="submit">
           Proceed for Approval
         </button>
@@ -116,7 +116,7 @@ var Status = "TBC";
 console.log(jsonData);
 // Get a reference to the table body
 var tableBody = document.getElementById('resident-table').getElementsByTagName('tbody')[0];
-let request_id = document.getElementById('request_id');
+let collection_id = document.getElementById('collection_id');
 let pageheader = document.getElementById('page-header');
 let collection_confirmDate= document.getElementById('conDate');
 let collection_scheduleDate = document.getElementById('schedDate');
@@ -191,7 +191,7 @@ function fillTable(data, status) {
             collection_collectDate.textContent = col.concat(": ", collection.collected_on); 
             requestee_name.textContent = name.concat(": ",collection.Requestee) ;
             summmarized_reqDocument_list.textContent = document_list.concat(":", document_items );
-            request_id.value = collection.id;
+            collection_id.value = collection.id;
           });
 
           // Insert cells into the row and populate them with data
