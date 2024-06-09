@@ -11,6 +11,8 @@ use App\Http\Controllers\AdminPanel\requestRecordController;
 use App\Http\Controllers\AdminPanel\requirementController;
 use App\Http\Controllers\base_residentController;
 use App\Http\Controllers\fileController;
+use App\Http\Controllers\notificationController;
+use App\Http\Controllers\pdfController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,6 +61,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/requests/view_collection/confirm',[collectionController::class,'update'])->name('admin.modify_collection');
     
    
+    Route::get('/admin/notifications',[notificationController::class,'index'])->name('admin.list_notifications');
+    Route::get('/admin/requests/check_notification',[notificationController::class,'check'])->name('admin.check_notification');
+    
+    Route::get('/admin/generatePdf_requestRecord',[pdfController::class,'generate_RequestRecords'])->name('admin.requestRecord_pdf');
     
 
 

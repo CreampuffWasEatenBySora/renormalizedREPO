@@ -20,7 +20,7 @@ return new class extends Migration
               
             // Table-unique keys
             $table->string('requirement_type');
-            $table->string('requirement_filepath');
+            $table->string('requirement_filename');
 
             $table->timestamps();
             

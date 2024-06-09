@@ -4,18 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
-use App\Models\barangayDocument;
-use App\Models\document_requirement;
-use App\Models\requirement_listing;
 use App\Http\Controllers\Controller;
-use App\Models\personalAccessToken;
+use App\Http\Controllers\notificationController;
+use App\Models\notifications;
 use App\Models\requestedDocument;
 use App\Models\requestRecord;
 use App\Models\submittedRequirements; 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\URL;
-use Nette\Utils\Arrays;
 
 class requestControllerAPI extends Controller
 {
@@ -42,7 +38,7 @@ class requestControllerAPI extends Controller
                         $path = $value->storeAs(
                             'requirementImages/'.$request->input('requestCode'), $filename, 'private'
                         );
-                        Log::info($filename. " Uploaded to: ". $path);  // Debug statement
+                        // Log::info($filename. " Uploaded to: ". $path);  // Debug statement
 
                         
                         submittedRequirements::create([
@@ -94,7 +90,7 @@ class requestControllerAPI extends Controller
                         // Generate a URL for the file
                         $filePath =   "http://192.168.56.1/example-app/storage".'/app/private/'.$filePath;
                         $fileDetails['filePath'] = $filePath;
-                        Log::info( $filePath);  // Debug statement
+                        // Log::info( $filePath);  // Debug statement
 
                         array_push($fileArray,$fileDetails);
     
@@ -118,7 +114,7 @@ class requestControllerAPI extends Controller
      
             $UUID = $request->input('userID');
             $requestID = $request->input('requestID');
-            Log::info($request);  // Debug statement
+            // Log::info($request);  // Debug statement
             $requestData = [];
             $requirementImages = [];
 
@@ -176,7 +172,7 @@ class requestControllerAPI extends Controller
              
 
               $jsonData = json_encode($requestData);
-              Log::info($requestData);  // Debug statement
+            //   Log::info($requestData);  // Debug statement
 
             // Log::info($requestData);  // Debug statement
             return response()->json(['status' => 'success', 'message' => 'Logged in successfully!', 'request_data' => json_decode($jsonData) ], 200);
@@ -196,7 +192,7 @@ class requestControllerAPI extends Controller
         
 
         
-        Log::info($request);  // Debug statement
+        // Log::info($request);  // Debug statement
  
         $UUID =  $request->input('requesterID');
         $accesskey = $request->input('accessKey');
@@ -239,6 +235,18 @@ class requestControllerAPI extends Controller
  
 
         if ($request != null) {
+
+            try {
+                
+
+            $resident = DB::table('barangay_residents')->where('UUID','=', $UUID)->first();
+            notificationController::notifyBarangayOfficers($resident->id, $newRequest->id, "Request", "New request submitted");
+
+            } catch (\Throwable $th) {
+                return response()->json(['status' => 'error', 'message' => 'Request submitted unsuccessfully...'  ], 500);
+            }
+
+
             return response()->json(['status' => 'success', 'message' => 'Request submitted successfully!'  ], 200);
 
         } else {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\AdminPanel;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\notificationController;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -229,6 +230,19 @@ class collectionController extends Controller
                   }
     
     
+                  try {
+                
+
+                    $request = DB::table('request_records')->where('id','=', $requestId)->first();
+                    $resident = DB::table('barangay_residents')->where('UUID','=',  $request->resident_id)->first();
+                    $officer = DB::table('barangay_residents')->where('UUID','=', Auth::user()->UUID)->first();
+ 
+                    notificationController::notifySpecific($officer->id, $resident->id, $collectionId, "Collection", "A collection has been scheduled!");
+        
+                    } catch (\Throwable $th) {
+                        return response()->json(['status' => 'error', 'message' => 'Collection date scheduled unsuccessfully...'  ], 500);
+                    }
+        
                 return response()->json(['status' => 'success' ], 200);
                 
                 } catch (\Throwable $th) {

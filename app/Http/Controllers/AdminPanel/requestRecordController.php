@@ -4,6 +4,7 @@ namespace App\Http\Controllers\AdminPanel;
 
 use App\Models\requestRecord;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\notificationController;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
@@ -21,6 +22,7 @@ class requestRecordController extends Controller
         $sort = $request->input('sort');
         $filter = $request->input('filter');
         $filterText = $request->input('searchbox');
+        
         $requestData = [];
         
         try {        
@@ -68,7 +70,7 @@ class requestRecordController extends Controller
                 }
 
             $jsonData = json_encode($requestData); 
-            Log::info($requestData);  // Debug statement
+            // Log::info($requestData);  // Debug statement
             
             return view('administrator.requests_operations.list_requests',  ['requests_jsonData' =>  $jsonData  ]);
 
@@ -224,7 +226,7 @@ class requestRecordController extends Controller
         $requestRemarks =$requestDetails['remarks'];
         $requestDocuments_granted = $arrayData['documents'];
         
-        Log::info($requestDocuments_granted );
+        // Log::info($requestDocuments_granted );
 
 
         try {
@@ -261,10 +263,26 @@ class requestRecordController extends Controller
               }
 
 
+
+            try {
+                
+                $request = DB::table('request_records')
+                ->where('id', $requestId)->first();           
+                
+                $officer= DB::table('barangay_residents')->where('UUID','=', Auth::user()->UUID)->first();
+                $resident = DB::table('barangay_residents')->where('UUID','=', $request->resident_id)->first();
+                $eventDesc = $requestStatus == "APR" ? "Document Request Approved" : "Document Request Rejected";                
+
+                notificationController::notifySpecific($officer->id, $resident->id, $request->id, "Request",$eventDesc);
+
+            } catch (\Throwable $th) {
+                Log::error("Error in notifying: ".$th);  // Debug statement
+            }
+
             return response()->json(['status' => 'success' ], 200);
             
             } catch (\Throwable $th) {
-            Log::info("Error in updating request: ".$th);  // Debug statement
+            Log::error("Error in updating request: ".$th);  // Debug statement
             return response()->json(['status' => 'failed'], 200);
              
         }

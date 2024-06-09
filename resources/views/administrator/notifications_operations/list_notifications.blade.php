@@ -6,7 +6,7 @@
 
   <div class="content-header">
 
-  <h3 id="page-header">Manage Requests</h3>
+  <h3 id="page-header">Notifications</h3>
 
   <div class="searchbar">
     <form action="{{ route('admin.list_requests') }}" method="get">
@@ -44,64 +44,34 @@
 </div>
 
 <div class="resident-container">
-
-  <div class="request-header">
-    <div class="request-details-box">
-    <div class="request-detail">
-       <p id="regdate" class="detail-regdate">Requested on:</p>  
-       <p id="name" class="detail-name">Requested by:</p>
-       <p id="documents" class="detail-address">Requested Documents:</p>
-       
-    </div>
-
-    <div class="approval-container">
-      <form action= "{{ route('admin.view_request') }}" method="get">
-        <input  style="display: none" id="request_id" name="request_id" type="text">
-        <button  type="submit">
-          Proceed for Approval
-        </button>
-      </form>
-
-    </div>
-  </div>
+ 
 
   <div class="request-status-container">
     
     <div class="request-status-switcher">
-      <div class="request-status-item" onclick='filterStatus("PEN")'>
-        Pending
+      <div class="request-status-item" onclick='filterStatus(0)'>
+        New
       </div>
-      <div class="request-status-item" onclick='filterStatus("APR")'>
-        Approved
+      <div class="request-status-item" onclick='filterStatus(1)'>
+        Read
       </div>
-      <div class="request-status-item" onclick='filterStatus("REJ")'>
-        Rejected
+      <div class="request-status-item" onclick='filterStatus(2)'>
+        All
       </div>
-    
     </div>
 
   </div>
 
   </div>
-  <a href="{{ route('admin.requestRecord_pdf'); }}"> Generate Approved Requests PDF!</a>
 
   <div class="resident-table-container">
-    
     <table class="resident-table" id="resident-table">
       <thead>
-        <th>Request code</th>
-        <th>Requested on</th>
-        <th>Requested by</th>
-        <th>Requested documents</th>
-        <th class="barangay-officer">Responded by</th>
-        <th class="barangay-officer">Responded on</th>
-      </thead>
+        </thead>
        <tbody>
 
        </tbody>
     </table>
-
-
   </div>
 
 </div>
@@ -111,42 +81,36 @@
 
 
   // Assume jsonData contains your JSON data
-var json  = JSON.stringify({!! $requests_jsonData!!});
+var json  = JSON.stringify({!! $notifs_jsonData!!});
 var jsonData = JSON.parse(json);
-var Status = "PEN";
+var status = 0;
 console.log(jsonData);
 // Get a reference to the table body
 var tableBody = document.getElementById('resident-table').getElementsByTagName('tbody')[0];
 let request_id = document.getElementById('request_id');
 let pageheader = document.getElementById('page-header');
-let request_regdate = document.getElementById('regdate');
-let requestee_name = document.getElementById('name');
-let summmarized_reqDocument_list = document.getElementById('documents');
-let  reg = request_regdate.textContent;
-let  name = requestee_name.textContent;
-let  document_list = summmarized_reqDocument_list.textContent;
 
 
 function filterStatus(status) {
   
   switch (status) {
-    case "PEN":
+    case 0:
       Status = status;
-      pageheader.textContent = "Pending requests"
+      pageheader.textContent = "New notifications"
       break;
   
-      case "APR":
+      case 1:
       Status = status;
-      pageheader.textContent = "Approved requests"
+      pageheader.textContent = "Read Notifications"
       break;
 
-      case "REJ":
+      case 2:
       Status = status;
-      pageheader.textContent = "Rejected requests"
+      pageheader.textContent = "All Notifications "
       break;
 
     default:
-      pageheader.textContent = "Manage requests"
+      pageheader.textContent = "Notifications"
       break;
   }
 
@@ -156,66 +120,72 @@ function filterStatus(status) {
 }
 
 function fillTable(data, status) {
- // console.log(data);
-      
-      
+
+
+    console.log("status is: " + status );
+    var i = 0;    
     // Iterate over each entry in the JSON data
-    data.forEach(function(request) {
-
-      if (status == request.Status) {
-        
-
-        requestedDocuments =  request.requested_doc;
-      var document_items = "";      
-      requestedDocuments.forEach(element => {
-      document_items =  document_items.concat(" | ", element.docName," | ");
-
-      });
-
-
+    data.forEach(function(notification) {
+      
+      if (status == notification.readStatus || status == 2 ) {
+         i++;
     // Create a new table row
     var row = tableBody.insertRow();
 
           row.classList.add('resident-clickable-row');
           //assign an onclick function to the row:
-          row.addEventListener('click', function() {
-            
-            // Handle row click event here
-            request_regdate.textContent = reg.concat(": ", request.Requested_on);
-            requestee_name.textContent = name.concat(": ",request.Requestee) ;
-            summmarized_reqDocument_list.textContent = document_list.concat(":", document_items );
-            request_id.value = request.id;
-          });
+          row.addEventListener('click', function () {
+            notifShortCut(notification.id, notification.eventType, notification.eventID, notification.readStatus)
+          })
 
           // Insert cells into the row and populate them with data
-
-
           var cell1 = row.insertCell(0);
-          cell1.innerHTML = request.Request_code;
+          cell1.innerHTML = "| " +notification.eventType+" |" ;
           
           var cell2 = row.insertCell(1);
-          cell2.innerHTML = request.Requested_on;
+          cell2.innerHTML = "From: " + notification.senderName;
 
           var cell3 = row.insertCell(2);
-          cell3.innerHTML = request.Requestee;
+          cell3.innerHTML = notification.eventDesc;
 
-          var cell4 = row.insertCell(3);
-          cell4.innerHTML = document_items;
-
-          var cell5 = row.insertCell(4);
-          cell5.innerHTML = request.Responded_by;
- 
-          var cell6 = row.insertCell(5);
-          cell6.innerHTML = request.Responded_on;
- 
+          if (!notification.readStatus) {
+      console.log("unread");
+      row.classList.add('notifications-unread');            
+          } else {
+      console.log("read");
+      row.classList.remove('notifications-unread');            
+          }
 
       }
-     
           });
+
+          if (i==0) {
+    var row = tableBody.insertRow();
+    var cell1 = row.insertCell(0);
+
+    var message; 
+
+    switch (status) {
+      case 0:
+        message = "You have no new notifications."
+        break;
+      
+      case 1:
+        message = "You have no read notifications."
+        break;
+
+        default: 
+        message = "You have no notifications"
+        break;
+    }
+
+    cell1.innerHTML = message ;
+        
+      }
 
     }
 
-    fillTable(jsonData, "PEN");
+    fillTable(jsonData, 0);
 
 
 let sort_order_button = document.getElementById('sort-button');
@@ -298,6 +268,36 @@ resident_sort.addEventListener("change", function () {
 
 });
 
+  function notifShortCut(notifId, eventType, eventID, readStatus) {
+ 
+    $.ajax({
+        url: "{{ route('admin.check_notification') }}",
+        type: "GET",
+        data: {
+            id: notifId,
+            eventId: eventID,
+            eventType: eventType,
+            readStatus: readStatus
+        },
+        success: function(response) {
+            console.log(response); // Log the response to see what is being returned
+
+            if (response.route) {
+                window.location.replace(response.route);
+            } else if (response.status) {
+                console.log("Status: " + response.status);
+                // Handle other statuses if needed
+            } else {
+                console.error("Unexpected response format");
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Error sending data to server:", error);
+        }
+    });
+    }
+ 
+             
 
 
 

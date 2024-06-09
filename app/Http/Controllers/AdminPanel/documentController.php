@@ -4,9 +4,10 @@ namespace App\Http\Controllers\AdminPanel;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\notificationController;
 use Illuminate\Support\Facades\Log;
 use App\Models\barangayDocument;
-use App\Models\document_requirement;
+use Illuminate\Support\Facades\Auth;
 use App\Models\requirement_listing;
 use Illuminate\Support\Facades\DB;
 
@@ -57,7 +58,7 @@ class documentController extends Controller
 
         $query = "SELECT * FROM document_requirements";
         $resultSet = DB::select($query);
-        Log::info("Query Submitted: ". $query);
+        // Log::info("Query Submitted: ". $query);
         $jsonData = json_encode($resultSet);
 
         return view('administrator.document_operations.create_document', ['requirement_jsonData' => $jsonData]);
@@ -91,6 +92,12 @@ class documentController extends Controller
 
             }
  
+            try {
+                $officer= DB::table('barangay_residents')->where('UUID','=', Auth::user()->UUID)->first();
+                notificationController::notifyBarangayresidents($officer->id, $newDocument->id, "Document", "New document added");
+            } catch (\Throwable $th) {
+                Log::info("JSON not received: ". $th);
+            }
             
             return response()->json(['status' => 'success'], 200);
 
@@ -115,17 +122,15 @@ class documentController extends Controller
             $allRequirements = DB::table("document_requirements")->get(); 
             
 
-            //get the list of the listed requirements
-            $query = 
-            "SELECT doc_req.id 
-            FROM requirement_listings as req_list
-            INNER JOIN barangay_documents as b_docs
-            ON req_list.for_document_id = b_docs.id
-            INNER JOIN document_requirements as doc_req
-            ON req_list.from_requirement_id = doc_req.id
-            WHERE b_docs.id =".$documentId;
+            //get the list of the listed requirements 
 
-            $resultSet = DB::select($query);
+            $query = DB::table('requirement_listings as req_list')
+            ->select('doc_req.id')
+            ->join('barangay_documents as b_docs', 'req_list.for_document_id', '=','b_docs.id')
+            ->join('document_requirements as doc_req', 'req_list.from_requirement_id', '=','doc_req.id')
+            ->where('b_docs.id',$documentId);
+
+            $resultSet = $query->get();
             $docJsonData = json_encode($documentData);
             $selected_reqJsonData = json_encode($resultSet);
             $all_reqJsonData = json_encode($allRequirements);

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB; 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\notificationController;
 use App\Models\collectionRecord;
 use App\Models\personalAccessToken;
 use App\Models\requestedDocument;
@@ -31,7 +32,7 @@ class CollectionControllerAPI extends Controller
         if (AuthenticationControllerAPI::validateAccessKey($UUID, $accesskey)) {
          
 
-        collectionRecord::create([
+        $newCollection = collectionRecord::create([
             'request_id' => $requestID,
             'date_scheduled' => $requestSchedDate,
             'status' => "TBC",
@@ -40,6 +41,16 @@ class CollectionControllerAPI extends Controller
 
 
         }
+
+        try {
+                
+
+            $resident = DB::table('barangay_residents')->where('UUID','=', $UUID)->first();
+            notificationController::notifyBarangayOfficers($resident->id, $newCollection->id, "Collection", "A collection has been scheduled!");
+
+            } catch (\Throwable $th) {
+                return response()->json(['status' => 'error', 'message' => 'Collection date scheduled unsuccessfully...'  ], 500);
+            }
 
         
         return response()->json(['status' => 'success', 'message' => 'Collection date scheduled successfully!'  ], 200);
@@ -121,6 +132,8 @@ class CollectionControllerAPI extends Controller
 
               $jsonData = json_encode($requestData);
               Log::info($requestData);  // Debug statement
+
+              
 
             // Log::info($requestData);  // Debug statement
             return response()->json(['status' => 'success', 'message' => 'Logged in successfully!', 'collection_data' => json_decode($jsonData) ], 200);

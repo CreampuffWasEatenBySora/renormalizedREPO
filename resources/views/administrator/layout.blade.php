@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"> 
+
+
+
 <head>
     <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
     <title>Request</title>
@@ -21,6 +24,7 @@
       <li>  <a href="{{ route('admin.list_requirements') }}"> Requirements</a></li> 
       <li>  <a href="{{ route('admin.list_requests') }}"> Requests</a></li> 
       <li>  <a href="{{ route('admin.list_collections') }}"> Collections</a></li> 
+      <li >  <a id="notification" href="{{ route('admin.list_notifications') }}"> Notifications </a></li> 
       <li>  <a href=" #" Target="_blank"> About</a></li> 
      
 
@@ -51,4 +55,31 @@
 
     
 </body>
+
+<script>
+
+let notiftext = document.getElementById('notification');
+
+var json  = JSON.stringify({!! $notifications!!});
+var baseNotiFJason= JSON.parse(json);
+ console.log("From base notif jason here <3");
+ console.log(baseNotiFJason);
+
+var i = 0;
+baseNotiFJason.forEach(function(notif) {
+    if (!notif.read_status) {
+        i++;
+        console.log("unread notification");
+    } else {
+        console.log("read notification");
+    }
+});
+
+if (i > 0 ) {
+    notiftext.style.fontWeight = "bold";
+    notiftext.textContent = "Notifications ("+i+")";    
+}
+
+</script>
+
 </html>

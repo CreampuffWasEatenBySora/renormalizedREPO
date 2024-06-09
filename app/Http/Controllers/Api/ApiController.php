@@ -15,7 +15,7 @@ use Illuminate\Validation\Rules\Password;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-
+use App\Http\Controllers\notificationController;
 
 class ApiController extends Controller
 {
@@ -97,6 +97,8 @@ class ApiController extends Controller
 
         $regId = $request->input('registrationID');
       
+        $newRegistration = registration::find($regId);
+                                
         
          try {
 
@@ -112,9 +114,6 @@ class ApiController extends Controller
                     $regId = $parts[1];
                      Log::info($regId);
 
-                    $newRegistration = registration::find($regId);
-                    // Log::info("Imagefound:" . $key . " - " .$value);  // Debug statement
-                                            
 
                         if ( Str::contains($originalFilename, 'selfie')) {
     
@@ -125,7 +124,7 @@ class ApiController extends Controller
                             );
      
                             $newRegistration->update([
-                                'selfie_filepath' => $filename,
+                                'selfie_filename' => $filename,
                                 'remarks' => 'For verification'
                             ]);
                             
@@ -139,12 +138,25 @@ class ApiController extends Controller
           
 
                             $newRegistration->update([
-                                'document_filepath' => $filename
+                                'document_filename' => $filename
                             ]);
                         }
                         
 
                 } 
+            }
+
+
+            try {
+                
+                
+                $resident = DB::table('barangay_residents')->where('UUID','=', $newRegistration->resident_id)->first();
+
+                notificationController::notifyBarangayOfficers($resident->id, $newRegistration->id, "Registration", "New Registration Submitted");
+
+
+            } catch (\Throwable $th) {
+                //throw $th;
             }
             
             Log::info("Image records updated successfully.");  // Debug statement

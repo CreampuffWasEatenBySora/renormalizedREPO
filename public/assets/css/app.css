@@ -456,3 +456,8 @@ input::-webkit-inner-spin-button {
   flex-direction: column;
   width: 50vw;
 }
+
+.notifications-unread{
+  color: red;
+  border: 1px solid red;
+}

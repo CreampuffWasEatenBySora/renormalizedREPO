@@ -7,6 +7,7 @@ use App\Models\barangay_residents;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\notificationController;
 use App\Models\registration;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -71,7 +72,7 @@ class ResidentController extends Controller
     }
     
     public function investigate(Request $request){
-        $resident_id = $request->input('resident_uuid');
+        $resident_id = $request->input('resident_id');
         try {
             $query = 
             "SELECT br.UUID, br.fullName as `resident_name`, br.status, br.birthday, br.email,  ad.municipality,  ad.barangay, ad.subdivision_district, ad.house_number, ad.phone_number, reg.requirement_type,  reg.date_registered, officer.fullName as `Barangay Officer`, reg.date_responded, reg.remarks, reg.selfie_filepath, reg.document_filepath
@@ -82,7 +83,7 @@ class ResidentController extends Controller
             ON officer.UUID = reg.barangay_officer_id
             INNER JOIN addresses as ad
             ON ad.resident_id = reg.resident_id           
-            WHERE br.UUID = '".$resident_id."'";
+            WHERE br.id = '".$resident_id."'";
             
             $resultSet = DB::select($query);       
             Log::info("Query Submitted: ". $query);
@@ -130,27 +131,19 @@ class ResidentController extends Controller
             ]);
 
 
-            Log::error("Resident access level updated successfully.");  // Debug statement
+            try {
+                $officer= DB::table('barangay_residents')->where('UUID','=', Auth::user()->UUID)->first();
 
-            $query = 
-            "SELECT br.UUID, br.fullName as `resident_name`, br.status, br.birthday, br.email,  ad.municipality,  
-            ad.barangay, ad.subdivision_district, ad.house_number, ad.phone_number, reg.requirement_type, 
-             reg.date_registered, officer.fullName as `Barangay Officer`, reg.date_responded, reg.remarks, reg.selfie_filepath, reg.document_filepath
-            FROM registrations as reg
-            INNER JOIN barangay_residents as br
-            ON br.UUID = reg.resident_id 
-            LEFT JOIN barangay_residents as officer
-            ON officer.UUID = reg.barangay_officer_id
-            INNER JOIN addresses as ad
-            ON ad.resident_id = reg.resident_id           
-            WHERE br.UUID = '".$request->input('resident_uuid')."'";
+                $eventDesc = $registration->status == "V" ? "Registration Verified" : "Registration Rejected";                
 
-            $resultSet = DB::select($query);       
-            Log::info("Query Submitted: ". $query);
-            $jsonData = json_encode($resultSet);
-            Log::info("resultset returned: ". $jsonData);
-       
-            return view('administrator.resident_operations.view_resident')->with('data', json_decode($jsonData, true));
+                notificationController::notifySpecific($officer->id, $resident->id, $registration->id, "Registration",$eventDesc);
+
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+
+            Log::info("Resident access level updated successfully.");  // Debug statement
+            return route('admin.view_resident',['resident_uuid'=>  $resident->UUID]);
 
         } catch (\Exception $e) {
             Log::error("Resident access level updated unsuccessful. {$e->getMessage()}");  // Debug statement
