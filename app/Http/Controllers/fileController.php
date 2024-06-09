@@ -24,7 +24,7 @@ class fileController extends Controller
         
         switch ($category) {
             case 'REG':
-                $filePath = "registrationImages/reg-\\".$categoryCode."\\".$filename;
+                $filePath = "registrationImages\\reg-".$categoryCode."\\".$filename;
                 break;
                         
             case 'REQ':

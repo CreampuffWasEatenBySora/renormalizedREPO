@@ -18,18 +18,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {   
-        View::composer('*', function ($view) {
+        View::composer('administrator.*', function ($view) {
 
             $adminID= DB::table('barangay_residents')->select('id')->where('UUID', '=', Auth::user()->UUID)->first();
             $notifs= DB::table('notifications')->where('for_user_id', '=', $adminID->id)->get();
             $view->with('notifications', $notifs);
         });
-
-        View::composer('admin.*', function ($view) {
-            
-            $adminID= DB::table('barangay_residents')->select('id')->where('UUID', '=', Auth::user()->UUID)->first();
-            $view->with('adminID', $adminID);
-        });
+ 
     }
 
     

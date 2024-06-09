@@ -167,37 +167,21 @@
          
          <div class="verification-images-container">
             <div class="selfie">
-               <a href="
-               @php
-               $document_filepath = $data[0]['document_filepath'];
-               $document_filepath =  Storage::url($document_filepath);
-                echo asset( $document_filepath);
-               @endphp
-               " target="_blank" rel="noopener noreferrer">
-               <img src="
-               @php
-               $document_filepath = $data[0]['document_filepath'];
-               $document_filepath =  Storage::url($document_filepath);
-                echo asset( $document_filepath);
-               @endphp
-               " alt="" class="verification-image" alt="selfie">
+
+               <a  href="{{    
+               route('files.get', ['category' => 'REG', 'categoryCode'=>$data[0]['id'],'fileName' => $data[0]['selfie_filename'] ]) }}" target="_blank">
+
+               <img src="{{    
+               route('files.get', ['category' => 'REG', 'categoryCode'=>$data[0]['id'],'fileName' => $data[0]['selfie_filename'] ]) }}
+               " alt="" class="verification-image" alt="selfie"> 
+             </a>
             </a>
             </div>
             <div class="document">
-               <a href="
-               @php
-               $selfie_filepath = $data[0]['selfie_filepath'];
-               $selfie_filepath =  Storage::url($selfie_filepath);
-                echo asset( $selfie_filepath);
-               @endphp
-               " target="_blank" rel="noopener noreferrer">
-               <img src="
-               @php
-               $selfie_filepath = $data[0]['selfie_filepath'];
-               $selfie_filepath =  Storage::url($selfie_filepath);
-                echo asset( $selfie_filepath);
-               @endphp
-               "  alt="" class="verification-image" alt="document">
+               <a href="{{    
+               route('files.get', ['category' => 'REG', 'categoryCode'=>$data[0]['id'],'fileName' => $data[0]['document_filename'] ]) }}"target="_blank" rel="noopener noreferrer">
+               <img src="{{    
+               route('files.get', ['category' => 'REG', 'categoryCode'=>$data[0]['id'],'fileName' => $data[0]['document_filename'] ]) }}"  alt="" class="verification-image" alt="document">
             </a>
             </div>
          </div>

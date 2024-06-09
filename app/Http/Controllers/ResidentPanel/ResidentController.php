@@ -13,6 +13,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
+use function Laravel\Prompts\select;
+
 class ResidentController extends Controller
 {
     
@@ -26,38 +28,49 @@ class ResidentController extends Controller
 
         try {
             
-        
-            $query = "SELECT br.UUID as `id`, br.fullName, ad.municipality, ad.subdivision_district, 
-            ad.barangay, ad.house_number, ad.created_at AS `Reg_Date`
-            FROM addresses AS ad
-            INNER JOIN barangay_residents AS br 
-            ON ad.resident_id = br.UUID ";
+
+            
+            $query =DB::table('addresses as ad')
+            ->select(
+                 'br.id as id', 
+                 'br.fullName', 
+                 'ad.municipality', 
+                 'ad.subdivision_district', 
+                 'ad.barangay', 
+                 'ad.house_number', 
+                 'ad.created_at AS Reg_Date') 
+            ->join('barangay_residents as br', 'ad.resident_id', '=', 'br.UUID');
 
             if ($filter && $filterText) {
                 
                 if ($filter == 'any') {
-                $query .= 
-                "WHERE br.fullname LIKE '%". $filterText ."%' OR
-                       ad.municipality LIKE '%". $filterText ."%' OR
-                       ad.subdivision_district LIKE '%". $filterText ."%' OR
-                       ad.barangay LIKE '%". $filterText ."%' OR
-                       ad.house_number LIKE '%". $filterText ."%' OR
-                       br.created_at LIKE '%". $filterText ."%' ORDER BY br.fullName ASC 
-                ";
-                $resultSet = DB::select($query);
-                   
-                } else {
-                $query .= "WHERE ".$filter." LIKE '%".$filterText."%' ORDER BY  ".$filter."  ASC";
-                $resultSet = DB::select($query );
+                
+                $query = $query
+                ->whereAny([
+                    'br.fullname',
+                    'ad.municipality',
+                    'ad.subdivision_district',
+                    'ad.barangay',
+                    'ad.house_number',
+                    'br.created_at'], 'LIKE', '%'.$filterText.'%');
+                $resultSet =$query->get();
+            } 
 
-                }
+            else {
+                    $query = $query
+                    ->where($filter, 'LIKE', '%'.$filterText.'%')
+                    ->orderBy($filter);
+                    $resultSet =$query->get();
 
-
-            } else{
-                $resultSet = DB::select($query);
             }
 
-            Log::info("Query Submitted: ". $query);
+            } 
+            else{
+                $resultSet =$query->get();
+
+            }
+
+            // Log::info("Query Submitted: ". $query);
             $jsonData = json_encode($resultSet);
           
             return view('administrator.resident_operations.list_residents',  ['resident_jsonData' => $jsonData]);
@@ -73,9 +86,28 @@ class ResidentController extends Controller
     
     public function investigate(Request $request){
         $resident_id = $request->input('resident_id');
+
         try {
             $query = 
-            "SELECT br.UUID, br.fullName as `resident_name`, br.status, br.birthday, br.email,  ad.municipality,  ad.barangay, ad.subdivision_district, ad.house_number, ad.phone_number, reg.requirement_type,  reg.date_registered, officer.fullName as `Barangay Officer`, reg.date_responded, reg.remarks, reg.selfie_filepath, reg.document_filepath
+            "SELECT 
+            br.UUID, 
+            br.fullName as `resident_name`, 
+            br.status, 
+            br.birthday, 
+            br.email,  
+            ad.municipality,  
+            ad.barangay, 
+            ad.subdivision_district, 
+            ad.house_number, 
+            ad.phone_number,
+            reg.id,  
+            reg.requirement_type,  
+            reg.date_registered, 
+            officer.fullName as `Barangay Officer`, 
+            reg.date_responded, 
+            reg.remarks, 
+            reg.selfie_filename, 
+            reg.document_filename
             FROM registrations as reg
             INNER JOIN barangay_residents as br
             ON br.UUID = reg.resident_id 
@@ -143,7 +175,8 @@ class ResidentController extends Controller
             }
 
             Log::info("Resident access level updated successfully.");  // Debug statement
-            return route('admin.view_resident',['resident_uuid'=>  $resident->UUID]);
+            return redirect()->route('admin.view_resident',['resident_id'=>  $resident->id]);
+            
 
         } catch (\Exception $e) {
             Log::error("Resident access level updated unsuccessful. {$e->getMessage()}");  // Debug statement

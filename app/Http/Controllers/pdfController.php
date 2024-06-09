@@ -79,11 +79,27 @@ class pdfController extends Controller
    public function generateSummary(){
 
     $summaryData = [];
+    // Data included in the summary: 
+    // Admins registered up to the Report's creation
+    // Users registered up the reports'creation
+    // Total Registrations for the month, rejections included. 
+    // Quick stats i.e requests submitted, approved, rejected, and collected in the month.
+    // List of the documents available for request up to the report's creation. Along with the quantity of them collected.  
+    $registrationBaseQuery = DB::table('barangay_residents as br')
+    -> select(
+      'br.fullName as fullName', 
+      'officer.fullName as Responded_by', 
+      'reqs.date_responded as Responded_on', 
+      'reqs.status as Status'
 
-              
+    )     
+    ->leftjoin('barangay_residents as resident', 'resident.UUID', '=', 'reqs.resident_id')
+    ->join('barangay_residents as officer', 'officer.UUID', '=', 'reqs.barangay_officer_id')
+    ->where('reqs.status','=','APR');
+
+    ; 
     $query = DB::table('request_records as reqs')
     -> select(
-
       'reqs.id as id', 
       'reqs.request_code as Request_code', 
       'reqs.date_requested as Requested_on', 

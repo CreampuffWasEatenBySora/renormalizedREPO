@@ -25,6 +25,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     
 });
 Route::post('/login', [AuthenticationControllerAPI::class, 'login']);
+Route::post('/findPhoneMatch', [AuthenticationControllerAPI::class, 'findPhoneMatch']);
+Route::post('/findEmailMatch', [AuthenticationControllerAPI::class, 'findEmailMatch']);
 Route::post('/register', [ApiController::class, 'register']);
 Route::post('/uploadImages', [ApiController::class, 'uploadImages']);
 

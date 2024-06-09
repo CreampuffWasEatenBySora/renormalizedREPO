@@ -24,6 +24,8 @@ class ApiController extends Controller
 
     public function register(Request $request)
     {
+        Log::info("requestStarted");  // Debug statement
+
         try {
             // Ready the data to be uploaded
             $fullName = $request->input('temp_resident_nameData');
@@ -85,7 +87,6 @@ class ApiController extends Controller
 
         }
 
-            Log::info("User records updated successfully.");  // Debug statement
             return response()->json(['status' => 'success', 'message' => 'Account is added','registrationID' => $newRegistration->id, 'residentID' => $newResidentID->UUID], 200);
         } catch (\Exception $e) {
             Log::error("Error registering user: {$e->getMessage()}");  // Debug statement
@@ -96,6 +97,7 @@ class ApiController extends Controller
     public function uploadImages(Request $request){
 
         $regId = $request->input('registrationID');
+        Log::info('regID: '.$regId);
       
         $newRegistration = registration::find($regId);
                                 
@@ -110,9 +112,6 @@ class ApiController extends Controller
                 
                     // Get the original filename
                     $originalFilename = $value->getClientOriginalName();
-                    $parts = explode("-", $originalFilename);
-                    $regId = $parts[1];
-                     Log::info($regId);
 
 
                         if ( Str::contains($originalFilename, 'selfie')) {
@@ -162,8 +161,8 @@ class ApiController extends Controller
             Log::info("Image records updated successfully.");  // Debug statement
             return response()->json(['status' => 'success', 'message' => 'Images are uploaded'], 200);
 
-           } catch (\Exception $e) {
-            Log::error("Error uploading image user: {$e->getMessage()}");  // Debug statement
+           } catch (\Throwable $th) {
+            Log::error("Error uploading image user: ".$th);  // Debug statement
             return response()->json(['status' => 'error', 'message' => 'Image upload failed'], 500);
            
         }

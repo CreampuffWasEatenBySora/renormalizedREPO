@@ -37,7 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/home',[AdminController::class,'index'])->name('admin.home');
     Route::get('/admin/residents',[ResidentController::class,'index'])->name('admin.list_residents');
     Route::get('/admin/residents/view_resident',[ResidentController::class,'investigate'])->name('admin.view_resident');
-    Route::get('/admin/residents/view_resident/verify',[ResidentController::class,'updateRegistration'])->name('admin.verify_resident');
+    Route::get('/admin/residents/verify_resident',[ResidentController::class,'updateRegistration'])->name('admin.verify_resident');
    
     Route::get('/admin/documents',[documentController::class,'index'])->name('admin.list_documents');
     Route::get('/admin/documents/view_document',[documentController::class,'check'])->name('admin.view_document');

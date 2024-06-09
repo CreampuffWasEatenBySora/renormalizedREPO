@@ -178,123 +178,29 @@ class AuthenticationControllerAPI extends Controller
         
     }
 
-//    public function login(Request $request){
 
-//     try {
-
-
-
-
-//         $email = $request->input('email');
-//         $password = $request->input('password');
-
-
-//         $apiKey = bin2hex(random_bytes(28));    
+    public function findPhoneMatch(Request $request){
         
-//         $residentLogin = User::where('email', $email)->first();
+        $phoneNumber = $request->input('phoneNum');
+        $findMatch = DB::table('addresses')->where('phone_number','=', $phoneNumber)->get();
+
+        if ( count($findMatch) == 0 ) {
+            return response()->json(['status' => 'success']);
+        } else {
+            return response()->json(['status' => 'failed', 'message' => 'number is already used']);
+        }
+    }
 
     
+    public function findEmailMatch(Request $request){
         
-//     } catch (\Throwable $th) {
-        
-//         Log::info("Error in retrieving JSON data from android client: ".$th);  // Debug statement
-        
-//     }
+        $email = $request->input('email');
+        $findMatch = DB::table('barangay_residents')->where('email','=', $email)->get();
 
-  
-//     if ($residentLogin && Hash::check($password,  $residentLogin ->password)) {
-        
-
-
-      
-
-       
-//         try {
-
-            
-//         $user_token = personalAccessToken::where('tokenable_id', $residentLogin->id)
-//         ->where('tokenable_type',$residentLogin->UUID )->get(); 
-
-
-//         } catch (\Throwable $th) {
-
-//         Log::info("Error in retrieving token data from server: ".$th);  // Debug statement
-
-//         }
-
-                      
-
-//         $resident = barangay_residents::where('UUID', $residentLogin->UUID)->first();
-
-
-//         $sentUserData =[
-//             'Email' => $residentLogin->email,
-//             'UUID' => $resident->UUID,
-//             'FullName' => $resident->fullName,
-//             'Birthday' => $resident->birthday,
-//             'Status' => $resident->status,
-//             'Address_id' => $resident->address_id,
-//             'Registration_id'=> $resident->registration_id
-//         ];
-        
-
-
-//         if (!$user_token->count() === 0 ) {
-
-//             Log::info("User token: ".$user_token);  // Debug statement
-
-//                     if ($user_token->expires_at > now()) {
-                    
-//                         return response()->json(['status' => 'failure', 'message' => 'Expired token. Verify Account again.'], 200);
-
-//                     } else {
-                        
-//                     $user_token ->update([
-//                         'last_used_at' => now() 
-//                     ]);
-
-//                         $sentUserData['access_token'] = $user_token->token;
-//                         Log::info($sentUserData);  // Debug statement    
-//                         Log::info("Account logged in successfully!");  // Debug statement     
-//                         return response()->json(['status' => 'success', 'message' => 'Logged in successfully!', 'userdata' => $sentUserData], 200);
-                
-//                     }
-
-            
-//         } else {
-            
-//             $newUserToken = personalAccessToken::create([
-
-//                 'token' => $apiKey,
-//                 'tokenable_type' =>$residentLogin->UUID,
-//                 'tokenable_id' => $residentLogin->id,
-//                 'last_used_at' => now(),
-//                 'expires_at' => now()->addWeek(2)
-
-//             ])->get();
-
-//             if ($newUserToken !=null) {
-//                 Log::info("New user token: ".$user_token);  // Debug statement
-                
-//                 $sentUserData['access_token'] = $apiKey;
-//                 Log::info("Account logged in successfully with new token:".$apiKey);  // Debug statement    
-//                 Log::info($sentUserData);  // Debug statement    
-//                 return response()->json(['status' => 'success', 'message' => 'Logged in successfully!', 'userdata' => $sentUserData], 200);
-           
-//             } else {
-
-//                 Log::info("Error in token generation: ".$th);  // Debug statement
-//                 return response()->json(['status' => 'failure', 'message' => 'There was an error in the server'], 500);
-
-//             }
-        
-//         }
-        
-
-//     } else {
-//         return response()->json(['status' => 'failure', 'message' => 'Invalid login credentials. Try again.'], 200);
-//     }
-
-//    }
-
+        if ( count($findMatch) == 0 ) {
+            return response()->json(['status' => 'success']);
+        } else {
+            return response()->json(['status' => 'failed', 'message' => 'email is already used']);
+        }
+    }
 }

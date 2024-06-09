@@ -58,7 +58,7 @@
 
     <div class="approval-container">
       <form action= "{{ route('admin.view_resident') }}" method="get">
-        <input  style="display: none" id="resident_uuid" name="resident_uuid" type="text">
+        <input  style="display: none" id="resident_id" name="resident_id" type="text">
         <button  type="submit">
           Proceed for Approval
         </button>
@@ -95,7 +95,7 @@ var jsonData = {!! $resident_jsonData !!};
 
 // Get a reference to the table body
 var tableBody = document.getElementById('resident-table').getElementsByTagName('tbody')[0];
-let resident_id = document.getElementById('resident_uuid');
+let resident_id = document.getElementById('resident_id');
 let resident_regdate = document.getElementById('resident_regdate');
 let resident_name = document.getElementById('resident_name');
 let resident_address = document.getElementById('resident_address');
