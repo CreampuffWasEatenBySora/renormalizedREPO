@@ -46,7 +46,7 @@ class CollectionControllerAPI extends Controller
                 
 
             $resident = DB::table('barangay_residents')->where('UUID','=', $UUID)->first();
-            notificationController::notifyBarangayOfficers($resident->id, $newCollection->id, "Collection", "A collection has been scheduled!");
+            notificationController::notifyBarangayOfficers($resident->id, $newCollection->id, "Collection", "Scheduled");
 
             } catch (\Throwable $th) {
                 return response()->json(['status' => 'error', 'message' => 'Collection date scheduled unsuccessfully...'  ], 500);

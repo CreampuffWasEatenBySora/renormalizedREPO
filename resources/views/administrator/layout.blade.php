@@ -80,6 +80,9 @@ if (i > 0 ) {
     notiftext.textContent = "Notifications ("+i+")";    
 }
 
+function getApproxDate(function () {
+   
+}) 
 </script>
 
 </html>

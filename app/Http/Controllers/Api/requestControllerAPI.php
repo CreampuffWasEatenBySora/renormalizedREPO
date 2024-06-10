@@ -240,7 +240,7 @@ class requestControllerAPI extends Controller
                 
 
             $resident = DB::table('barangay_residents')->where('UUID','=', $UUID)->first();
-            notificationController::notifyBarangayOfficers($resident->id, $newRequest->id, "Request", "New request submitted");
+            notificationController::notifyBarangayOfficers($resident->id, $newRequest->id, "Request", "New");
 
             } catch (\Throwable $th) {
                 return response()->json(['status' => 'error', 'message' => 'Request submitted unsuccessfully...'  ], 500);

@@ -94,7 +94,7 @@ class documentController extends Controller
  
             try {
                 $officer= DB::table('barangay_residents')->where('UUID','=', Auth::user()->UUID)->first();
-                notificationController::notifyBarangayresidents($officer->id, $newDocument->id, "Document", "New document added");
+                notificationController::notifyBarangayresidents($officer->id, $newDocument->id, "Document", "New");
             } catch (\Throwable $th) {
                 Log::info("JSON not received: ". $th);
             }

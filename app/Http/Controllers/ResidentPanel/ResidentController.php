@@ -166,7 +166,7 @@ class ResidentController extends Controller
             try {
                 $officer= DB::table('barangay_residents')->where('UUID','=', Auth::user()->UUID)->first();
 
-                $eventDesc = $registration->status == "V" ? "Registration Verified" : "Registration Rejected";                
+                $eventDesc = $registration->status == "V" ? "Verified" : "Rejected";                
 
                 notificationController::notifySpecific($officer->id, $resident->id, $registration->id, "Registration",$eventDesc);
 

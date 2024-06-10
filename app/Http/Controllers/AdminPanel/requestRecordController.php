@@ -271,7 +271,7 @@ class requestRecordController extends Controller
                 
                 $officer= DB::table('barangay_residents')->where('UUID','=', Auth::user()->UUID)->first();
                 $resident = DB::table('barangay_residents')->where('UUID','=', $request->resident_id)->first();
-                $eventDesc = $requestStatus == "APR" ? "Document Request Approved" : "Document Request Rejected";                
+                $eventDesc = $requestStatus == "APR" ? "Approved" : "Rejected";                
 
                 notificationController::notifySpecific($officer->id, $resident->id, $request->id, "Request",$eventDesc);
 

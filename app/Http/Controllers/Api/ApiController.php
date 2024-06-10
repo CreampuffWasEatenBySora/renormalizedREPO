@@ -151,7 +151,7 @@ class ApiController extends Controller
                 
                 $resident = DB::table('barangay_residents')->where('UUID','=', $newRegistration->resident_id)->first();
 
-                notificationController::notifyBarangayOfficers($resident->id, $newRegistration->id, "Registration", "New Registration Submitted");
+                notificationController::notifyBarangayOfficers($resident->id, $newRegistration->id, "Registration", "New");
 
 
             } catch (\Throwable $th) {

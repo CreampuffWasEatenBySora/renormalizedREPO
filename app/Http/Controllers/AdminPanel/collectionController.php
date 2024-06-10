@@ -237,10 +237,10 @@ class collectionController extends Controller
                     $resident = DB::table('barangay_residents')->where('UUID','=',  $request->resident_id)->first();
                     $officer = DB::table('barangay_residents')->where('UUID','=', Auth::user()->UUID)->first();
  
-                    notificationController::notifySpecific($officer->id, $resident->id, $collectionId, "Collection", "A collection has been scheduled!");
+                    notificationController::notifySpecific($officer->id, $resident->id, $collectionId, "Collection", "Collected");
         
                     } catch (\Throwable $th) {
-                        return response()->json(['status' => 'error', 'message' => 'Collection date scheduled unsuccessfully...'  ], 500);
+                        return response()->json(['status' => 'error', 'message' => 'Collection date set unsuccessfully...'  ], 500);
                     }
         
                 return response()->json(['status' => 'success' ], 200);

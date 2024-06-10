@@ -19,6 +19,7 @@ return new class extends Migration
             $table->timestamp('date_registered')-> useCurrent();
             $table->timestamp('date_responded')->  nullable();
             $table -> string('remarks')->  nullable();
+            $table -> string('requirement_type')->  nullable();
             $table->string('selfie_filename')  ->nullable();
             $table->string('document_filename')  ->nullable();
             $table->timestamps();

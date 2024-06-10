@@ -139,14 +139,10 @@ function fillTable(data, status) {
           })
 
           // Insert cells into the row and populate them with data
-          var cell1 = row.insertCell(0);
-          cell1.innerHTML = "| " +notification.eventType+" |" ;
-          
-          var cell2 = row.insertCell(1);
-          cell2.innerHTML = "From: " + notification.senderName;
 
-          var cell3 = row.insertCell(2);
-          cell3.innerHTML = notification.eventDesc;
+          var cell1 = row.insertCell(0);
+          cell1.innerHTML = notification.eventDesc + " " + notification.eventType + " From: " + notification.senderName; ;
+  
 
           if (!notification.readStatus) {
       console.log("unread");
