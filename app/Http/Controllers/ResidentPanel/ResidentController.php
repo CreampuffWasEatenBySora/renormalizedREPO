@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\ResidentPanel;
 
 use Illuminate\Support\Facades\Log;
-use App\Models\barangay_residents;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
@@ -33,13 +32,13 @@ class ResidentController extends Controller
             $query =DB::table('addresses as ad')
             ->select(
                  'br.id as id', 
-                 'br.fullName', 
+                 'br.name', 
                  'ad.municipality', 
                  'ad.subdivision_district', 
                  'ad.barangay', 
                  'ad.house_number', 
                  'ad.created_at AS Reg_Date') 
-            ->join('barangay_residents as br', 'ad.resident_id', '=', 'br.UUID');
+            ->join('users as br', 'ad.resident_id', '=', 'br.UUID');
 
             if ($filter && $filterText) {
                 
@@ -47,7 +46,7 @@ class ResidentController extends Controller
                 
                 $query = $query
                 ->whereAny([
-                    'br.fullname',
+                    'br.name',
                     'ad.municipality',
                     'ad.subdivision_district',
                     'ad.barangay',
@@ -88,36 +87,35 @@ class ResidentController extends Controller
         $resident_id = $request->input('resident_id');
 
         try {
-            $query = 
-            "SELECT 
-            br.UUID, 
-            br.fullName as `resident_name`, 
-            br.status, 
-            br.birthday, 
-            br.email,  
-            ad.municipality,  
-            ad.barangay, 
-            ad.subdivision_district, 
-            ad.house_number, 
-            ad.phone_number,
-            reg.id,  
-            reg.requirement_type,  
-            reg.date_registered, 
-            officer.fullName as `Barangay Officer`, 
-            reg.date_responded, 
-            reg.remarks, 
-            reg.selfie_filename, 
-            reg.document_filename
-            FROM registrations as reg
-            INNER JOIN barangay_residents as br
-            ON br.UUID = reg.resident_id 
-            LEFT JOIN barangay_residents as officer
-            ON officer.UUID = reg.barangay_officer_id
-            INNER JOIN addresses as ad
-            ON ad.resident_id = reg.resident_id           
-            WHERE br.id = '".$resident_id."'";
-            
-            $resultSet = DB::select($query);       
+            $query = DB::table('registrations as reg')
+            ->select(
+                'br.UUID',
+                'br.name as resident_name',
+                'br.status',
+                'br.birthday',
+                'br.email',
+                'ad.municipality',
+                'ad.barangay',
+                'ad.subdivision_district',
+                'ad.house_number',
+                'ad.phone_number',
+                'reg.id',
+                'reg.requirement_type',
+                'reg.date_registered',
+                'officer.name as Barangay_Officer',
+                'reg.date_responded',
+                'reg.remarks',
+                'reg.selfie_filename',
+                'reg.document_filename'
+            )
+            ->join('users as br', 'br.UUID', '=', 'reg.resident_id')
+            ->leftJoin('users as officer', 'officer.UUID', '=', 'reg.barangay_officer_id')
+            ->join('addresses as ad', 'ad.resident_id', '=', 'reg.resident_id')
+            ->where(function($query) use ($resident_id) {
+                $query->where('br.id', $resident_id)
+                      ->orWhere('reg.id', $resident_id);
+            });
+            $resultSet = $query->get();       
             Log::info("Query Submitted: ". $query);
             $jsonData = json_encode($resultSet);
 
@@ -146,11 +144,11 @@ class ResidentController extends Controller
         try {
             Log::error("Resident UUID: ".$request->input('resident_uuid'));  // Debug statement
             
-        $resident =  DB::table("barangay_residents")->where('UUID', $request->input('resident_uuid'))->first(); 
+        $resident =  DB::table("users")->where('UUID', $request->input('resident_uuid'))->first(); 
         $registration =  DB::table("registrations")->where('resident_id', $request->input('resident_uuid'))->first(); 
        
         
-            $resident = barangay_residents::find($resident->id);
+            $resident = User::find($resident->id);
             $resident->update([
                 'status' => $request->input('approval_status')
             ]);
@@ -164,7 +162,7 @@ class ResidentController extends Controller
 
 
             try {
-                $officer= DB::table('barangay_residents')->where('UUID','=', Auth::user()->UUID)->first();
+                $officer= DB::table('users')->where('UUID','=', Auth::user()->UUID)->first();
 
                 $eventDesc = $registration->status == "V" ? "Verified" : "Rejected";                
 

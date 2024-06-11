@@ -45,6 +45,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('supplementary_requirements');
+        Schema::dropIfExists('submitted_requirements');
     }
 };

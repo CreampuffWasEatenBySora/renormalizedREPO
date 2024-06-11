@@ -6,8 +6,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Models\barangay_residents;
+use App\Models\addresses;
 use App\Models\personalAccessToken;
+use App\Models\registration;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -44,7 +45,7 @@ class AuthenticationControllerAPI extends Controller
 
     public static  function validateAccessKey($UUID, $accesskey) : Bool{
         
-        $token = personalAccessToken::where(['token'=> $accesskey, 'tokenable_type' => $UUID])->first();
+        $token = personalAccessToken::where(['token'=> $accesskey, 'token_holder_id' => $UUID])->first();
 
 
         if ($token != null) {
@@ -68,14 +69,14 @@ class AuthenticationControllerAPI extends Controller
     }
 
 
-    public function getUserToken($apiKey, $UUID, $id) : Request{
+    public function getUserToken($apiKey, $UUID) : Request{
         
         $request = Request();
 
         try {
            
-            $user_token = personalAccessToken::where('tokenable_id', $id)
-            ->where('tokenable_type',$UUID)->first(); 
+            $user_token = personalAccessToken::where('token_holder_id', $UUID)
+            ->where('token_holder_id',$UUID)->first(); 
 
             // Log::info("User token: ".$user_token);  // Debug statement
 
@@ -103,8 +104,7 @@ class AuthenticationControllerAPI extends Controller
 
                 $newUserToken = personalAccessToken::create([
                     'token' => $apiKey,
-                    'tokenable_type' =>$UUID,
-                    'tokenable_id' => $id,
+                    'token_holder_id' =>$UUID,
                     'last_used_at' => now(),
                     'expires_at' => now()->addWeek(2) //Token Expires in two weeks. 
     
@@ -137,15 +137,17 @@ class AuthenticationControllerAPI extends Controller
         
         if ( $resident['userData'] != null) {
            
-        $user_token = AuthenticationControllerAPI::getUserToken($apiKey, $resident['userData']->UUID, $resident['userData']->id); 
+        $user_token = AuthenticationControllerAPI::getUserToken($apiKey, $resident['userData']->UUID); 
 
 
 
             if ( $user_token['tokenData']!= null ) {
         
-                $resident = barangay_residents::where('UUID', $resident['userData']->UUID )->first();
+                $resident = User::where('UUID', $resident['userData']->UUID )->first();
                 Log::info($resident);  // Debug statement    
 
+                $address = addresses::where('resident_id', $resident['userData']->UUID )->first();
+                $registration = registration::where('resident_id', $resident['userData']->UUID )->first();
 
                 $sentUserData =[
                     'Email' => $resident->email,
@@ -154,8 +156,8 @@ class AuthenticationControllerAPI extends Controller
                     'Birthday' => $resident->birthday,
                     'access_token' => $user_token['tokenData']->token,
                     'Status' => $resident->status,
-                    'Address_id' => $resident->address_id,
-                    'Registration_id'=> $resident->registration_id
+                    'Address_id' => $address,
+                    'Registration_id'=> $registration
                 ];
 
                 Log::info($sentUserData);  // Debug statement    
@@ -195,7 +197,7 @@ class AuthenticationControllerAPI extends Controller
     public function findEmailMatch(Request $request){
         
         $email = $request->input('email');
-        $findMatch = DB::table('barangay_residents')->where('email','=', $email)->get();
+        $findMatch = DB::table('users')->where('email','=', $email)->get();
 
         if ( count($findMatch) == 0 ) {
             return response()->json(['status' => 'success']);

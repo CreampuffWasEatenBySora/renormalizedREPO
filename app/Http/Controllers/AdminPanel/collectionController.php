@@ -27,8 +27,8 @@ class collectionController extends Controller
                 'cols.id as id', 
                 'cols.request_id as reqId', 
                 'reqs.request_code as Request_code', 
-                'resident.fullName as Requestee', 
-                'officer.fullName as Issued_by', 
+                'resident.name as Requestee', 
+                'officer.name as Issued_by', 
                 'cols.date_confirmed as confirmed_on', 
                 'cols.date_scheduled as scheduled_on', 
                 'cols.date_collected as collected_on', 
@@ -36,8 +36,8 @@ class collectionController extends Controller
 
               )     
               ->join('request_records as reqs', 'cols.request_id', '=', 'reqs.id')
-              ->join('barangay_residents as resident', 'resident.UUID', '=', 'reqs.resident_id')
-              ->join('barangay_residents as officer', 'officer.UUID', '=', 'reqs.barangay_officer_id');
+              ->join('users as resident', 'resident.UUID', '=', 'reqs.resident_id')
+              ->join('users as officer', 'officer.UUID', '=', 'reqs.barangay_officer_id');
 
               $collections = $query->get();
                 
@@ -96,9 +96,9 @@ class collectionController extends Controller
               'reqs.id as requestID', 
               'reqs.request_code as requestCode', 
               'reqs.date_requested as dateRequested', 
-              'resident.fullName as requestee', 
-              'apprOfficer.fullName as reqAproveOfficerName', 
-              'collectOfficer.fullName as reqAproveOfficerName', 
+              'resident.name as requestee', 
+              'apprOfficer.name as reqAproveOfficerName', 
+              'collectOfficer.name as reqAproveOfficerName', 
               'reqs.date_responded as dateResponded', 
               'collection.remarks as remarks', 
               'collection.date_scheduled as dateScheduled', 
@@ -106,10 +106,10 @@ class collectionController extends Controller
               'collection.status as status'
 
             )     
-            ->join('barangay_residents as resident', 'resident.UUID', '=', 'reqs.resident_id')
+            ->join('users as resident', 'resident.UUID', '=', 'reqs.resident_id')
             ->Join('collection_records as collection', 'collection.request_id', '=', 'reqs.id')
-            ->leftJoin('barangay_residents as apprOfficer', 'apprOfficer.UUID', '=', 'reqs.barangay_officer_id')
-            ->leftJoin('barangay_residents as collectOfficer', 'collectOfficer.UUID', '=', 'collection.barangay_officer_id')
+            ->leftJoin('users as apprOfficer', 'apprOfficer.UUID', '=', 'reqs.barangay_officer_id')
+            ->leftJoin('users as collectOfficer', 'collectOfficer.UUID', '=', 'collection.barangay_officer_id')
             ->where('collection.id', $request->input('collection_id'))
             ;
 
@@ -234,10 +234,9 @@ class collectionController extends Controller
                 
 
                     $request = DB::table('request_records')->where('id','=', $requestId)->first();
-                    $resident = DB::table('barangay_residents')->where('UUID','=',  $request->resident_id)->first();
-                    $officer = DB::table('barangay_residents')->where('UUID','=', Auth::user()->UUID)->first();
+                    $resident = DB::table('users')->where('UUID','=',  $request->resident_id)->first();
  
-                    notificationController::notifySpecific($officer->id, $resident->id, $collectionId, "Collection", "Collected");
+                    notificationController::notifySpecific(Auth::user()->id, $resident->id, $collectionId, "Collection", "Completed");
         
                     } catch (\Throwable $th) {
                         return response()->json(['status' => 'error', 'message' => 'Collection date set unsuccessfully...'  ], 500);

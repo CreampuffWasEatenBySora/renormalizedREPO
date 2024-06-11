@@ -18,9 +18,9 @@
       <option value="any"> No filter </option>
       <option value="reqs.id"> Request ID </option>
       <option value="resident.id"> Requestee ID </option>
-      <option value="brgy_res.fullName"> Requestee Name</option>
+      <option value="brgy_res.name"> Requestee Name</option>
       <option value="brgy_off.id"> Barangay Officer ID  </option>
-      <option value="brgy_off.fullName"> Barangay Officer Name </option>
+      <option value="brgy_off.name"> Barangay Officer Name </option>
       <option value="document"> Requested Document </option>
 
     </select>
@@ -141,8 +141,9 @@ function fillTable(data, status) {
           // Insert cells into the row and populate them with data
 
           var cell1 = row.insertCell(0);
-          cell1.innerHTML = notification.eventDesc + " " + notification.eventType + " From: " + notification.senderName; ;
-  
+          cell1.innerHTML = notification.eventDesc + " " + notification.eventType + " From: " + notification.senderName; 
+          var cell2 = row.insertCell(1);
+          cell2.innerHTML =  getApproxDate(notification.notifDate); 
 
           if (!notification.readStatus) {
       console.log("unread");
@@ -247,7 +248,7 @@ resident_sort.addEventListener("change", function () {
     default:
     resortedArray.sort((a, b) => 
         {
-      if(a.fullName < b.fullName){
+      if(a.name < b.name){
           return -1;
         }});
       break;
@@ -292,10 +293,7 @@ resident_sort.addEventListener("change", function () {
         }
     });
     }
- 
              
-
-
 
 </script>
 

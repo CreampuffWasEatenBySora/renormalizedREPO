@@ -29,12 +29,12 @@ return new class extends Migration
             // Imposing consraints on the Foreign Keys
             $table -> foreign('request_id')
                    -> references('id') 
-                   -> on('request_records') 
+                   -> on('users') 
                    -> onDelete('cascade');
  
             $table -> foreign('barangay_officer_id')
                    -> references('UUID') 
-                   -> on('barangay_residents') 
+                   -> on('users') 
                    -> onDelete('cascade');
         });
     }

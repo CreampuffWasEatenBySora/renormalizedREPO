@@ -23,7 +23,7 @@ class CollectionControllerAPI extends Controller
         
         $UUID =  $request->input('userID');
         $accesskey = $request->input('accessKey');
-        $requestID = $request->input('requestID');
+        $collectionID = $request->input('requestID');
         $requestSchedDate = $request->input('schedDate');
 
         Log::info($request);  // Debug statement
@@ -33,7 +33,7 @@ class CollectionControllerAPI extends Controller
          
 
         $newCollection = collectionRecord::create([
-            'request_id' => $requestID,
+            'request_id' => $collectionID,
             'date_scheduled' => $requestSchedDate,
             'status' => "TBC",
             'remarks' => "Scheduled for collection"
@@ -45,7 +45,7 @@ class CollectionControllerAPI extends Controller
         try {
                 
 
-            $resident = DB::table('barangay_residents')->where('UUID','=', $UUID)->first();
+            $resident = DB::table('users')->where('UUID','=', $UUID)->first();
             notificationController::notifyBarangayOfficers($resident->id, $newCollection->id, "Collection", "Scheduled");
 
             } catch (\Throwable $th) {
@@ -65,7 +65,7 @@ class CollectionControllerAPI extends Controller
         try {
      
             $UUID = $request->input('userID');
-            $requestID = $request->input('requestID');
+            $collectionID = $request->input('collectID');
             Log::info($request);  // Debug statement
             $requestData = [];
             $requirementImages = [];
@@ -79,9 +79,9 @@ class CollectionControllerAPI extends Controller
               'reqs.id as requestID', 
               'reqs.request_code as requestCode', 
               'reqs.date_requested as dateRequested', 
-              'resident.fullName as requestee', 
-              'apprOfficer.fullName as reqApproveOfficerName', 
-              'collectOfficer.fullName as reqCollectOfficerName', 
+              'resident.name as requestee', 
+              'apprOfficer.name as reqApproveOfficerName', 
+              'collectOfficer.name as reqCollectOfficerName', 
               'reqs.date_responded as dateResponded', 
               'collection.remarks as remarks', 
               'collection.date_scheduled as dateScheduled', 
@@ -89,13 +89,20 @@ class CollectionControllerAPI extends Controller
               'collection.status as status'
 
             )     
-            ->join('barangay_residents as resident', 'resident.UUID', '=', 'reqs.resident_id')
+            ->join('users as resident', 'resident.UUID', '=', 'reqs.resident_id')
             ->Join('collection_records as collection', 'collection.request_id', '=', 'reqs.id')
-            ->leftJoin('barangay_residents as apprOfficer', 'apprOfficer.UUID', '=', 'reqs.barangay_officer_id')
-            ->leftJoin('barangay_residents as collectOfficer', 'collectOfficer.UUID', '=', 'collection.barangay_officer_id')
-            ->where('resident.UUID', $UUID)
+            ->leftJoin('users as apprOfficer', 'apprOfficer.UUID', '=', 'reqs.barangay_officer_id')
+            ->leftJoin('users as collectOfficer', 'collectOfficer.UUID', '=', 'collection.barangay_officer_id')
             ;
+            if ($collectionID!= null) {
+                
+                $query = $query ->where('collection.id', $collectionID);
+    
+            } else {
 
+                $query = $query ->where('resident.UUID', $UUID);
+            
+            }
                 $requests = $query->get();
             
               
@@ -148,4 +155,30 @@ class CollectionControllerAPI extends Controller
      
 
     }
+
+    
+    public function cancel(Request $request){
+    
+        $id = $request->input('id');
+        // Log::info($request);
+  
+        try {
+  
+            $collection = collectionRecord::find($id);
+            $collection -> update([
+                    'status' => "CAN",
+                    'remarks' => "Cancelled by resident",
+                    'date_collected' => now()
+                ]);
+             
+                return response()->json(['status' => 'success', 'message' => 'Cancelled successfully'], 200);
+  
+        } catch (\Throwable $th) {
+  
+            Log::info("Error: ".$th);
+            return response()->json(['status' => 'failed'], 200);
+  
+        }
+  
+      }
 }

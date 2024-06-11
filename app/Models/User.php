@@ -22,6 +22,8 @@ class User extends Authenticatable
         'name',
         'UUID',
         'role',
+        'status',
+        'birthday',
         'email',
         'password'
     ];

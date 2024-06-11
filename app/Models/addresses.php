@@ -21,7 +21,7 @@ class addresses extends Model
 
     public function resident()
     {
-        return $this->belongsTo(barangay_residents::class, 'resident_id');
+        return $this->belongsTo(User::class, 'resident_id');
     }
 
 }

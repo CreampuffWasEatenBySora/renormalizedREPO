@@ -18,7 +18,6 @@ class notificationController extends Controller
         
         $eventType = request()->input('eventType');
         $dateRange = request()->input('requestDay');
-        $officer = DB::table('barangay_residents')->where('UUID','=', Auth::user()->UUID)->first();
         
         $notifData = [];
         
@@ -28,19 +27,20 @@ class notificationController extends Controller
               -> select(
 
                 'notif.id as id', 
-                'sender.fullName as senderName', 
-                'receiver.fullName as receiverName', 
+                'sender.name as senderName', 
+                'receiver.name as receiverName', 
+                'notif.created_at as notifDate', 
                 'notif.for_event_id as eventID', 
                 'notif.event_type as eventType', 
                 'notif.event_description as eventDesc', 
                 'notif.read_status as readStatus'
               )     
-              ->join('barangay_residents as sender', 'sender.id', '=', 'notif.from_user_id')
-              ->join('barangay_residents as receiver', 'receiver.id', '=', 'notif.for_user_id')
+              ->join('users as sender', 'sender.id', '=', 'notif.from_user_id')
+              ->join('users as receiver', 'receiver.id', '=', 'notif.for_user_id')
             //   ->orWhere(function (Builder $query) {
             //     $query
                 
-                ->where('notif.for_user_id', '=',$officer->id)
+                ->where('notif.for_user_id', '=',Auth::user()->id)
             //     ->orWhere('notif.from_user_id', '=',Auth::user()->id);
             // })
             ;
@@ -115,7 +115,7 @@ class notificationController extends Controller
         $eventId = $request->input('eventId');
         $eventType = $request->input('eventType');
         $readStatus = $request->input('readStatus');
-        Log::info($request);
+        // Log::info($request);
 
 
         try {
@@ -162,7 +162,7 @@ class notificationController extends Controller
     public static function notifyBarangayOfficers($fromUserId, $eventId, $eventType, $eventDescription){
 
         
-        $barangayOfficers = DB::table('barangay_residents')->where('access_level','=', 'A')->get();
+        $barangayOfficers = DB::table('users')->where('role','=', 'A')->get();
 
         foreach ($barangayOfficers as $barangayOfficer) {
 
@@ -182,7 +182,7 @@ class notificationController extends Controller
     public static function notifyBarangayresidents($fromUserId, $eventId, $eventType, $eventDescription){
 
         
-        $barangayResidents = DB::table('barangay_residents')->where('access_level','=', 'R')->get();
+        $barangayResidents = DB::table('users')->where('role','=', 'R')->get();
 
         foreach ($barangayResidents as $barangayResident) {
 

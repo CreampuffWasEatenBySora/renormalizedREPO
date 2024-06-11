@@ -16,10 +16,6 @@ use Illuminate\Support\Facades\Storage;
 class requestControllerAPI extends Controller
 {
     
-
-    
-
-
     static function storeFiles(Request $request, $requestID){
         
         foreach ($request->all() as $key => $value) {
@@ -60,9 +56,7 @@ class requestControllerAPI extends Controller
             
             }
 
-
     }
-
     
     static function fetchFileURLs(Request $request)  {
         $fileArray = [];
@@ -104,9 +98,6 @@ class requestControllerAPI extends Controller
         
     }
 
-
-
-
     public function fetch(Request $request){
 
 
@@ -125,21 +116,34 @@ class requestControllerAPI extends Controller
               'reqs.id as requestID', 
               'reqs.request_code as requestCode', 
               'reqs.date_requested as dateRequested', 
-              'officer.fullName as officerName', 
+              'officer.name as officerName', 
               'reqs.date_responded as dateResponded', 
               'reqs.remarks as remarks',
-              'reqs.status as status'
+              'reqs.status as status',
+              'cols.date_scheduled as colSched',
+              'cols.date_collected as colDate',
+              'cols.id as colID',
+              'cols.status as colStat'
 
             )     
-            ->join('barangay_residents as resident', 'resident.UUID', '=', 'reqs.resident_id')
-            ->leftJoin('barangay_residents as officer', 'officer.UUID', '=', 'reqs.barangay_officer_id')
-            ->where('reqs.resident_id', $UUID)
-            
+            ->join('users as resident', 'resident.UUID', '=', 'reqs.resident_id')
+            ->leftJoin('users as officer', 'officer.UUID', '=', 'reqs.barangay_officer_id')
+            ->leftJoin('collection_records as cols', 'cols.request_id', '=', 'reqs.id')
             ;
+            if ($requestID!= null) {
+                
+                $query = $query ->where('reqs.id', $requestID);
+    
+            } else {
 
-                $requests = $query->get();
+                $query = $query ->where('reqs.resident_id', $UUID);
             
-              
+            }
+
+            
+                $requests = $query->get();
+                Log::info( $requests);  // Debug statement
+
               foreach ($requests as $request) {
 
                   $array = json_decode(json_encode($request), true);
@@ -239,7 +243,7 @@ class requestControllerAPI extends Controller
             try {
                 
 
-            $resident = DB::table('barangay_residents')->where('UUID','=', $UUID)->first();
+            $resident = DB::table('users')->where('UUID','=', $UUID)->first();
             notificationController::notifyBarangayOfficers($resident->id, $newRequest->id, "Request", "New");
 
             } catch (\Throwable $th) {
@@ -255,8 +259,32 @@ class requestControllerAPI extends Controller
 
     } else {
         return response()->json(['status' => 'error', 'message' => 'Expired or invalid token.'  ], 400);
-
     }
+    }
+
+    public function cancel(Request $request){
     
-}
+        $id = $request->input('id');
+        // Log::info($request);
+  
+        try {
+  
+            $collection = requestRecord::find($id);
+            $collection -> update([
+                    'status' => "CAN",
+                    'remarks' => "Cancelled by resident",
+                    'date_responded' => now()
+                ]);
+
+                return response()->json(['status' => 'success', 'message' => 'Cancelled successfully'], 200);
+             
+  
+        } catch (\Throwable $th) {
+  
+            Log::info("Error: ".$th);
+            return response()->json(['status' => 'failed'], 200);
+  
+        }
+  
+      }
 }

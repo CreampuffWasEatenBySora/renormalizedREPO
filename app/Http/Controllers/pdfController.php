@@ -23,8 +23,8 @@ class pdfController extends Controller
           'reqs.id as id', 
           'reqs.request_code as Request_code', 
           'reqs.date_requested as Requested_on', 
-          'resident.fullName as Requestee', 
-          'officer.fullName as Responded_by', 
+          'resident.name as Requestee', 
+          'officer.name as Responded_by', 
           'reqs.date_responded as Responded_on', 
           'reqs.status as Status'
 
@@ -87,8 +87,8 @@ class pdfController extends Controller
     // List of the documents available for request up to the report's creation. Along with the quantity of them collected.  
     $registrationBaseQuery = DB::table('barangay_residents as br')
     -> select(
-      'br.fullName as fullName', 
-      'officer.fullName as Responded_by', 
+      'br.name as fullName', 
+      'officer.name as Responded_by', 
       'reqs.date_responded as Responded_on', 
       'reqs.status as Status'
 
@@ -103,8 +103,8 @@ class pdfController extends Controller
       'reqs.id as id', 
       'reqs.request_code as Request_code', 
       'reqs.date_requested as Requested_on', 
-      'resident.fullName as Requestee', 
-      'officer.fullName as Responded_by', 
+      'resident.name as Requestee', 
+      'officer.name as Responded_by', 
       'reqs.date_responded as Responded_on', 
       'reqs.status as Status'
 

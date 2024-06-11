@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
-use App\Models\barangay_residents;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\addresses;
@@ -34,16 +33,7 @@ class ApiController extends Controller
             $uuid = Str::uuid()->toString();
             $IDtype = $request->input('temp_resident_IDType');
 
-            // Store the user data first
-            barangay_residents::create([
-                'UUID' => $uuid,
-                'fullName' => $fullName,
-                'email' => $email,
-                'password' => Hash::make($password)
-
-            ]);
-
-            User::create([
+           $user = User::create([
                 'name' => $fullName,
                 'UUID' => $uuid,
                 'email' => $email,
@@ -67,27 +57,12 @@ class ApiController extends Controller
                 'phone_number' => $phoneNumber
             ]);
 
-            registration::create([
+            $registration = registration::create([
                 'resident_id' => $uuid,
                 'requirement_type'=>$IDtype
             ]);
 
-        $newResidentID = DB::table("barangay_residents")->where('UUID', $uuid)->first(); 
-        $newAddress = DB::table("addresses")->where('resident_id', $uuid)->first(); 
-        $newRegistration = DB::table("registrations")->where('resident_id', $uuid)->first(); 
-
-        if($newResidentID){
-
-            $newResident =  barangay_residents::find($newResidentID->id);
-
-            $newResident ->update([
-                'address_id' => $newAddress->id,
-                'registration_id' => $newRegistration->id
-            ]);
-
-        }
-
-            return response()->json(['status' => 'success', 'message' => 'Account is added','registrationID' => $newRegistration->id, 'residentID' => $newResidentID->UUID], 200);
+            return response()->json(['status' => 'success', 'message' => 'Account is added','registrationID' => $registration->id, 'residentID' => $user->UUID], 200);
         } catch (\Exception $e) {
             Log::error("Error registering user: {$e->getMessage()}");  // Debug statement
             return response()->json(['status' => 'error', 'message' => 'Registration failed'], 500);
@@ -97,7 +72,6 @@ class ApiController extends Controller
     public function uploadImages(Request $request){
 
         $regId = $request->input('registrationID');
-        Log::info('regID: '.$regId);
       
         $newRegistration = registration::find($regId);
                                 
@@ -149,7 +123,7 @@ class ApiController extends Controller
             try {
                 
                 
-                $resident = DB::table('barangay_residents')->where('UUID','=', $newRegistration->resident_id)->first();
+                $resident = DB::table('Users')->where('UUID','=', $newRegistration->resident_id)->first();
 
                 notificationController::notifyBarangayOfficers($resident->id, $newRegistration->id, "Registration", "New");
 

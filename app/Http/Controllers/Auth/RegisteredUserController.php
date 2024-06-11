@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\barangay_residents;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Registered;
@@ -36,7 +35,7 @@ class RegisteredUserController extends Controller
             'lname' => ['required', 'string', 'max:255'],
             'fname' => ['required', 'string', 'max:255'],
             'mname' => ['required', 'string', 'max:1'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class, 'unique:'.barangay_residents::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'bday' => ['required' ],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
@@ -47,15 +46,7 @@ class RegisteredUserController extends Controller
         $fullname = $request->lname.", ".$request->fname." ".$mname;
         $birthday = $request->bday; 
         $uuid = Str::uuid()->toString();
-
-        barangay_residents::create([
-            'UUID' => $uuid,
-            'fullName' => $fullname,
-            'birthday' => $birthday,
-            'email' => $request->email,
-            'password' => Hash::make($request->password)
-        ]);
-
+ 
         $user = User::create([
             'name' => $fullname,
             'UUID' => $uuid,

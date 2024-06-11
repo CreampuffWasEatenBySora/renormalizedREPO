@@ -11,7 +11,6 @@ use App\Models\requestedDocument;
 use App\Models\requestRecord;
 use App\Models\requirements;
 use App\Models\submittedRequirements;
-use App\Models\supplementaryRequirements;
 use DateTime;
 
 use function PHPUnit\Framework\isNull;

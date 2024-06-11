@@ -47,7 +47,7 @@ class documentControllerAPI extends Controller
             }
     
             // Log::info($sentDocumentData['documents']);  // Debug statement
-            return response()->json(['status' => 'success', 'message' => 'Logged in successfully!', 'document_data' => $sentDocumentData], 200);
+            return response()->json(['status' => 'success', 'message' => 'Data sent successfully!', 'document_data' => $sentDocumentData], 200);
      
         } catch (\Throwable $th) {
 

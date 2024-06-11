@@ -7,6 +7,39 @@
     <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}">
     <title>Request</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <script>
+
+
+function getApproxDate(date) {
+    
+    
+	const curr = new Date();
+    var eventDate = new Date(date);
+	var nowMillis = curr.getTime();
+    var eventMillis = eventDate.getTime();
+	var approxDate;
+  	var  diff = nowMillis - eventMillis;
+            if ((diff/86400000) >= 365) {
+                approxDate = Math.trunc((diff/86400000)) +" years(s) ago";
+            } else if ((diff/86400000) >= 30) {
+                approxDate =  Math.trunc((diff/86400000)) +" month(s) ago";
+            } else if ((diff/86400000) >= 1) {
+                approxDate =  Math.trunc((diff/86400000)) +" days(s) ago";
+            }else if ((diff/3600000) >= 1) {
+                approxDate =  Math.trunc((diff/3600000)) +" Hour(s) ago";
+            } else if ((diff/60000) >= 1) {
+                approxDate =  Math.trunc((diff/60000)) +" minute(s) ago";
+            } else if ((diff/1000) >= 1){
+                approxDate =  Math.trunc((diff/1000)) +" second(s) ago";
+            }
+
+    return approxDate;
+
+};
+
+    </script>
+
 </head>
 <body>
 
@@ -80,9 +113,7 @@ if (i > 0 ) {
     notiftext.textContent = "Notifications ("+i+")";    
 }
 
-function getApproxDate(function () {
-   
-}) 
+
 </script>
 
 </html>

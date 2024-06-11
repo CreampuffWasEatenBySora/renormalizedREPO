@@ -24,12 +24,12 @@ class registration extends Model
 
     public function resident()
     {
-        return $this->belongsTo(barangay_residents::class, 'resident_id');
+        return $this->belongsTo(User::class, 'resident_id');
     }
 
     public function barangay_Officer()
     {
-        return $this->belongsTo(barangay_residents::class, 'barangay_officer_id');
+        return $this->belongsTo(User::class, 'barangay_officer_id');
     }
 
 

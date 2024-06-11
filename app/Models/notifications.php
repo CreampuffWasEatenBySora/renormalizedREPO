@@ -23,13 +23,13 @@ class notifications extends Model
     
     public function for_user_id()
     {
-        return $this->belongsTo(barangay_residents::class, 'id');
+        return $this->belongsTo(User::class, 'id');
     }
 
     
     public function from_user_id()
     {
-        return $this->belongsTo(barangay_residents::class, 'id');
+        return $this->belongsTo(User::class, 'id');
     }
     use HasFactory;
 

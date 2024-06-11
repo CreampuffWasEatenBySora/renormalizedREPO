@@ -33,14 +33,14 @@ class requestRecordController extends Controller
                 'reqs.id as id', 
                 'reqs.request_code as Request_code', 
                 'reqs.date_requested as Requested_on', 
-                'resident.fullName as Requestee', 
-                'officer.fullName as Responded_by', 
+                'resident.name as Requestee', 
+                'officer.name as Responded_by', 
                 'reqs.date_responded as Responded_on', 
                 'reqs.status as Status'
 
               )     
-              ->join('barangay_residents as resident', 'resident.UUID', '=', 'reqs.resident_id')
-              ->leftJoin('barangay_residents as officer', 'officer.UUID', '=', 'reqs.barangay_officer_id');
+              ->join('users as resident', 'resident.UUID', '=', 'reqs.resident_id')
+              ->leftJoin('users as officer', 'officer.UUID', '=', 'reqs.barangay_officer_id');
 
               $requests = $query->get();
                 
@@ -101,15 +101,15 @@ class requestRecordController extends Controller
               'reqs.id as requestID', 
               'reqs.request_code as requestCode', 
               'reqs.date_requested as dateRequested', 
-              'resident.fullName as requestee', 
-              'officer.fullName as officerName', 
+              'resident.name as requestee', 
+              'officer.name as officerName', 
               'reqs.date_responded as dateResponded', 
               'reqs.remarks as remarks',
               'reqs.status as status'
 
             )     
-            ->join('barangay_residents as resident', 'resident.UUID', '=', 'reqs.resident_id')
-            ->leftJoin('barangay_residents as officer', 'officer.UUID', '=', 'reqs.barangay_officer_id')
+            ->join('users as resident', 'resident.UUID', '=', 'reqs.resident_id')
+            ->leftJoin('users as officer', 'officer.UUID', '=', 'reqs.barangay_officer_id')
             ->where('reqs.id', $request->input('request_id'))
             
             ;
@@ -269,8 +269,8 @@ class requestRecordController extends Controller
                 $request = DB::table('request_records')
                 ->where('id', $requestId)->first();           
                 
-                $officer= DB::table('barangay_residents')->where('UUID','=', Auth::user()->UUID)->first();
-                $resident = DB::table('barangay_residents')->where('UUID','=', $request->resident_id)->first();
+                $officer= DB::table('users')->where('UUID','=', Auth::user()->UUID)->first();
+                $resident = DB::table('users')->where('UUID','=', $request->resident_id)->first();
                 $eventDesc = $requestStatus == "APR" ? "Approved" : "Rejected";                
 
                 notificationController::notifySpecific($officer->id, $resident->id, $request->id, "Request",$eventDesc);

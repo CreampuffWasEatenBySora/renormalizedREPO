@@ -119,7 +119,7 @@ function fillTable(data) {
             
             // Handle row click event here
             resident_regdate.textContent = reg.concat(": ", resident.Reg_Date);
-            resident_name.textContent = name.concat(": ",resident.fullName) ;
+            resident_name.textContent = name.concat(": ",resident.name) ;
             resident_address.textContent  = address.concat(": ",resident.house_number, ", ", resident.barangay, ", ", resident.subdivision_district, ", ", resident.municipality);
             resident_id.value = resident.id;
 
@@ -130,7 +130,7 @@ function fillTable(data) {
           cell1.innerHTML = resident.Reg_Date;
 
           var cell2 = row.insertCell(1);
-          cell2.innerHTML = resident.fullName;
+          cell2.innerHTML = resident.name;
 
           var cell3 = row.insertCell(2);
           cell3.innerHTML = resident.municipality;
@@ -183,7 +183,7 @@ resident_sort.addEventListener("change", function () {
     case "fullName":
       resortedArray.sort((a, b) => 
         {
-      if(a.fullName < b.fullName){
+      if(a.name < b.name){
           return -1;
         }});
       break;
@@ -229,7 +229,7 @@ resident_sort.addEventListener("change", function () {
     default:
     resortedArray.sort((a, b) => 
         {
-      if(a.fullName < b.fullName){
+      if(a.name < b.name){
           return -1;
         }});
       break;

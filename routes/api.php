@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\documentControllerAPI;
 use App\Http\Controllers\Api\requestApiController;
 use App\Http\Controllers\Api\requestControllerAPI;
 use App\Http\Controllers\Api\CollectionControllerAPI;
+use App\Http\Controllers\Api\notificationControllerAPI;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -35,15 +37,19 @@ Route::post('/uploadRequirements', [requestApiController::class, 'uploadRequirem
 
 
 Route::post('/fetchDocuments', [documentControllerAPI::class, 'fetch']);
+Route::post('/fetchNotifications', [notificationControllerAPI::class, 'fetch']);
+Route::post('/updateNotifications', [notificationControllerAPI::class, 'update']);
 
 
 Route::post('/fetchRequests', [requestControllerAPI::class, 'fetch']);
 Route::post('/storeRequest', [requestControllerAPI::class, 'store']);
+Route::post('/cancelRequest', [requestControllerAPI::class, 'cancel']);
 Route::post('/updateRequest',[requestApiController::class, 'updateRequestRecord']);
 Route::post('/getRequirementURLs', [requestControllerAPI::class, 'fetchFileURLs']);
 
 Route::post('/fetchCollections', [CollectionControllerAPI::class, 'fetch']);
 Route::post('/storeCollection', [CollectionControllerAPI::class, 'store']);
+Route::post('/cancelCollection', [CollectionControllerAPI::class, 'cancel']);
 
 
 

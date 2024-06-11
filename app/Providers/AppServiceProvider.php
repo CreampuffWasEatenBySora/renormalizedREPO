@@ -4,7 +4,6 @@ namespace App\Providers;
 
 
 use Illuminate\Support\Facades\Auth;
-use App\Models\barangay_residents;
 use App\Models\notifications;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\View;
@@ -20,8 +19,7 @@ class AppServiceProvider extends ServiceProvider
     {   
         View::composer('administrator.*', function ($view) {
 
-            $adminID= DB::table('barangay_residents')->select('id')->where('UUID', '=', Auth::user()->UUID)->first();
-            $notifs= DB::table('notifications')->where('for_user_id', '=', $adminID->id)->get();
+            $notifs= DB::table('notifications')->where('for_user_id', '=',Auth::user()->id)->get();
             $view->with('notifications', $notifs);
         });
  

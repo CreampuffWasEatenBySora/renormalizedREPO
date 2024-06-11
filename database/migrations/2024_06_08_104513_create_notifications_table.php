@@ -20,19 +20,19 @@ return new class extends Migration
              $table->unsignedBigInteger('for_event_id');
              $table->string('event_type');
              $table->string('event_description');
-             $table->boolean('read_status')->default('false');
+             $table->boolean('read_status')->default(false);
             
             
             // Imposing consraints on the Foreign Keys
             $table -> foreign('for_user_id')
                    -> references('id') 
-                   -> on('barangay_residents') 
+                   -> on('users') 
                    -> onDelete('cascade');
 
             // Imposing consraints on the Foreign Keys
             $table -> foreign('from_user_id')
             -> references('id') 
-            -> on('barangay_residents') 
+            -> on('users') 
             -> onDelete('cascade');
 
 

@@ -19,7 +19,7 @@ return new class extends Migration
             // Table-unique keys
             $table->string('municipality');
             $table->string('barangay');
-            $table->string('subdivision/district');
+            $table->string('subdivision_district');
             $table->string('house_number');
             $table->string('phone_number')->unique();
             $table->timestamps();

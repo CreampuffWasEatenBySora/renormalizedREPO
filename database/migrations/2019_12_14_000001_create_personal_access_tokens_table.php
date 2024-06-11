@@ -13,13 +13,18 @@ return new class extends Migration
     {
         Schema::create('personal_access_tokens', function (Blueprint $table) {
             $table->id();
-            $table->morphs('tokenable');
+            $table->string('token_holder_id');
             $table->string('name')->default('resident access token');
             $table->string('token', 64)->unique();
             $table->text('abilities')->nullable();
             $table->timestamp('last_used_at')->nullable();
             $table->timestamp('expires_at')->nullable();
             $table->timestamps();
+
+            $table -> foreign('token_holder_id')
+            -> references('UUID') 
+            -> on('users') 
+            -> onDelete('cascade');
         });
     }
 

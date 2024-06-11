@@ -20,6 +20,8 @@ class accountSeed extends Seeder
         DB::table('users')->insert([[
             'UUID' =>'ABCDE',
             'role' => 'A',
+            'status' => 'V',
+            'birthday' => '2003-04-31',
             'name' => 'Juan Dela Cruz',
             'email' => 'admin@net.com',
             'password' =>Hash::make('admin'),
@@ -27,6 +29,8 @@ class accountSeed extends Seeder
         [
             'UUID' => 'FGHIJ',
             'role' => 'R',
+            'status' => 'V',
+            'birthday' => '2005-05-27',
             'name' => 'Pedro Penduko',
             'email' => 'pedro@penduko.com',
             'password' =>Hash::make('resident'),
@@ -34,6 +38,8 @@ class accountSeed extends Seeder
         [
             'UUID' => 'LMNOP',
             'role' => 'R',
+            'status' => 'V',
+            'birthday' => '2002-01-16',
             'name' => 'John Doe',
             'email' => 'Juan@dose.com',
             'password' =>Hash::make('resident'),
@@ -41,35 +47,6 @@ class accountSeed extends Seeder
     );
 
     
-
-    
-    DB::table('barangay_residents')
-    ->insert([[
-        'UUID' =>'ABCDE',
-        'access_level' => 'A',
-        'status' => 'V',
-        'fullName' => 'Juan Dela Cruz',
-        'email' => 'admin',
-        'password' =>Hash::make('admin'),
-    ],
-    [
-        'UUID' => 'FGHIJ',
-        'access_level' => 'R',
-        'status' => 'V',  
-        'fullName'  => 'Pedro Penduko',
-        'email' => 'pedro@penduko.com',
-        'password' =>Hash::make('resident'),
-    ],
-    [
-        'UUID' => 'LMNOP',
-        'access_level' => 'R',
-        'status' => 'V',  
-        'fullName'  => 'John Doe',
-        'email' => 'Juan@dose.com',
-        'password' =>Hash::make('resident'),
-    ]]
-    );
-
     
     DB::table('addresses')
     ->insert([[
@@ -131,31 +108,6 @@ class accountSeed extends Seeder
 
     ]]
     );
-
-    
-    DB::table('barangay_residents')
-    ->where('UUID','=','ABCDE')
-    ->update(['registration_id' => 300001 , 'address_id' => 200001]);
-
-    
-    DB::table('barangay_residents')
-    ->where('UUID','=','FGHIJ')
-    ->update(['registration_id' => 300002 , 'address_id' => 200002]);
-
-    
-    DB::table('barangay_residents')
-    ->where('UUID','=','LMNOP')
-    ->update(['registration_id' => 300003 , 'address_id' => 200003]);
-    
-    
-
-
-
-
-
- 
-
-        
 
 
     }

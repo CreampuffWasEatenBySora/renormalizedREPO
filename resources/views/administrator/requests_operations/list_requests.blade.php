@@ -18,17 +18,17 @@
       <option value="any"> No filter </option>
       <option value="reqs.id"> Request ID </option>
       <option value="resident.id"> Requestee ID </option>
-      <option value="brgy_res.fullName"> Requestee Name</option>
+      <option value="brgy_res.name"> Requestee Name</option>
       <option value="brgy_off.id"> Barangay Officer ID  </option>
-      <option value="brgy_off.fullName"> Barangay Officer Name </option>
+      <option value="brgy_off.name"> Barangay Officer Name </option>
       <option value="document"> Requested Document </option>
 
     </select>
 
     <select name="resident_sort" id="resident_sort">
       <option value="req_code"> Request Code </option>
-      <option value="res_fullName"> Requestee Name</option>
-      <option value="off_fullName"> Barangay Officer Name  </option>
+      <option value="res_name"> Requestee Name</option>
+      <option value="off_name"> Barangay Officer Name  </option>
       <option value="resp_date"> Date Requested </option>
       <option value="req_date"> Date Responded </option>
 
@@ -253,7 +253,7 @@ resident_sort.addEventListener("change", function () {
         }});
       break;
 
-      case "res_fullName":
+      case "res_name":
       resortedArray.sort((a, b) => 
         {
       if(a.Requestee < b.Requestee){
@@ -261,7 +261,7 @@ resident_sort.addEventListener("change", function () {
         }});
       break;
 
-      case "off_fullName":
+      case "off_name":
       resortedArray.sort((a, b) => 
         {
       if(a.Responded_by < b.Responded_by){
@@ -281,7 +281,7 @@ resident_sort.addEventListener("change", function () {
     default:
     resortedArray.sort((a, b) => 
         {
-      if(a.fullName < b.fullName){
+      if(a.name < b.name){
           return -1;
         }});
       break;

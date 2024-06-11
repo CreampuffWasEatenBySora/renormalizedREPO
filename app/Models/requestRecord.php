@@ -22,12 +22,12 @@ class requestRecord extends Model
 
     public function resident_id()
     {
-        return $this->belongsTo(barangay_residents::class, 'id');
+        return $this->belongsTo(User::class, 'id');
     }
 
     public function barangay_officer_id()
     {
-        return $this->belongsTo(barangay_residents::class, 'id');
+        return $this->belongsTo(User::class, 'id');
     }
 
 
