@@ -46,8 +46,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/documents/create/store',[documentController::class,'store'])->name('admin.store_document');
    
     Route::get('/admin/requirements',[requirementController::class,'index'])->name('admin.list_requirements');
-    Route::get('/admin/requirements/view_requirement',[requirementController::class,'investigate'])->name('admin.view_requirement');
-    Route::get('/admin/requirements/view_requirement/modify',[requirementController::class,'update'])->name('admin.modify_requirement');
+    Route::get('/admin/requirements/view_requirement',[requirementController::class,'view'])->name('admin.view_requirement');
+    Route::post('/admin/requirements/view_requirement/modify',[requirementController::class,'modify'])->name('admin.modify_requirement');
     Route::get('/admin/requirementss/create',[requirementController::class,'create'])->name('admin.create_requirement');
     Route::get('/admin/requirementss/create/store',[requirementController::class,'store'])->name('admin.store_requirement');
    

@@ -116,7 +116,6 @@ class ResidentController extends Controller
                       ->orWhere('reg.id', $resident_id);
             });
             $resultSet = $query->get();       
-            Log::info("Query Submitted: ". $query);
             $jsonData = json_encode($resultSet);
 
             // $dataArray = json_decode($jsonData, true);

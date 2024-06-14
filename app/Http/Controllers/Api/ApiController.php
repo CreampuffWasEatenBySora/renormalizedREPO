@@ -29,6 +29,7 @@ class ApiController extends Controller
             // Ready the data to be uploaded
             $fullName = $request->input('temp_resident_nameData');
             $email = $request->input('temp_resident_loginData.email');
+            $birthday = $request->input('temp_resident_addressData.birthday');
             $password = $request->input('temp_resident_loginData.password');
             $uuid = Str::uuid()->toString();
             $IDtype = $request->input('temp_resident_IDType');
@@ -36,6 +37,7 @@ class ApiController extends Controller
            $user = User::create([
                 'name' => $fullName,
                 'UUID' => $uuid,
+                'birthday'=>$birthday,
                 'email' => $email,
                 'password' => Hash::make($password)
             ]);

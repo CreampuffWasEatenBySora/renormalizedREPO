@@ -82,7 +82,7 @@ class requestControllerAPI extends Controller
                     
                     if (Storage::disk('private')->exists($filePath)) {
                         // Generate a URL for the file
-                        $filePath =   "http://192.168.56.1/example-app/storage".'/app/private/'.$filePath;
+                        $filePath =   "http://192.168.0.109/barangay_eConnect/renormalizedREPO/storage".'/app/private/'.$filePath;
                         $fileDetails['filePath'] = $filePath;
                         // Log::info( $filePath);  // Debug statement
 

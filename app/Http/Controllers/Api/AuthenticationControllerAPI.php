@@ -146,13 +146,17 @@ class AuthenticationControllerAPI extends Controller
                 $resident = User::where('UUID', $resident['userData']->UUID )->first();
                 Log::info($resident);  // Debug statement    
 
-                $address = addresses::where('resident_id', $resident['userData']->UUID )->first();
-                $registration = registration::where('resident_id', $resident['userData']->UUID )->first();
+                $address = addresses::where('resident_id', 
+                
+                $resident->UUID 
+                
+                )->first();
+                $registration = registration::where('resident_id', $resident->UUID )->first();
 
                 $sentUserData =[
                     'Email' => $resident->email,
                     'UUID' => $resident->UUID,
-                    'FullName' => $resident->fullName,
+                    'FullName' => $resident->name,
                     'Birthday' => $resident->birthday,
                     'access_token' => $user_token['tokenData']->token,
                     'Status' => $resident->status,

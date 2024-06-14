@@ -46,7 +46,8 @@ class documentControllerAPI extends Controller
                     }
             }
     
-            // Log::info($sentDocumentData['documents']);  // Debug statement
+            Log::info("DOCS:");  // Debug statement
+            Log::info($sentDocumentData['documents']);  // Debug statement
             return response()->json(['status' => 'success', 'message' => 'Data sent successfully!', 'document_data' => $sentDocumentData], 200);
      
         } catch (\Throwable $th) {

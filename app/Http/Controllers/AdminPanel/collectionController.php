@@ -210,52 +210,51 @@ class collectionController extends Controller
                 
                   foreach ($requestedDocs as $document) {
     
-                        if (in_array($document->id, $requestDocuments_granted) && $collectionStatus != 'CAN') {
-    
-                            DB::table('requested_documents')
-                            ->where('id', $document->id)
-                            ->update(['remarks' => 'COLLECTED', 
-                            'status' => 'COL']);
-        
-                        } else {
-                          
-                            DB::table('requested_documents')
-                            ->where('id', $document->id)
-                            ->update(['remarks' => 'Collection Cancelled',  'status' => 'CAN']);
-        
-                        }
-                     
-                
-                    
-                  }
-    
-    
-                  try {
-                
+                    if (in_array($document->id, $requestDocuments_granted) && $collectionStatus != 'CAN') {
 
-                    $request = DB::table('request_records')->where('id','=', $requestId)->first();
-                    $resident = DB::table('users')->where('UUID','=',  $request->resident_id)->first();
- 
-                    notificationController::notifySpecific(Auth::user()->id, $resident->id, $collectionId, "Collection", "Completed");
-        
-                    } catch (\Throwable $th) {
-                        return response()->json(['status' => 'error', 'message' => 'Collection date set unsuccessfully...'  ], 500);
+                        DB::table('requested_documents')
+                        ->where('id', $document->id)
+                        ->update([ 
+                        'status' => 'RED']);
+    
+                    } else {
+                      
+                        DB::table('requested_documents')
+                        ->where('id', $document->id)
+                        ->update(['remarks' => 'Collection Cancelled',  'status' => 'CAN']);
+    
                     }
-        
-                return response()->json(['status' => 'success' ], 200);
-                
-                } catch (\Throwable $th) {
-                Log::info("Error in updating request: ".$th);  // Debug statement
-                return response()->json(['status' => 'failed'], 200);
                  
-            }
-              
+            
+                
+              }
 
 
-        
+              try {
+            
 
+                $request = DB::table('request_records')->where('id','=', $requestId)->first();
+                $resident = DB::table('users')->where('UUID','=',  $request->resident_id)->first();
+                $officer = DB::table('users')->where('UUID','=', Auth::user()->UUID)->first();
 
-    }
-}
+                notificationController::notifySpecific($officer->id, $resident->id, $collectionId, "Collection", "Ready");
+    
+                } catch (\Throwable $th) {
+                    return response()->json(['status' => 'error', 'message' => 'Collection date set unsuccessfully...'  ], 500);
+                }
+    
+            return response()->json(['status' => 'success' ], 200);
+            
+            } catch (\Throwable $th) {
+            Log::info("Error in updating request: ".$th);  // Debug statement
+            return response()->json(['status' => 'failed'], 200);
+             
+        }
+          
+
 
     
+
+
+}
+}

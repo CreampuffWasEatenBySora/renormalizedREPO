@@ -156,6 +156,52 @@ class CollectionControllerAPI extends Controller
 
     }
 
+
+    
+    public function confirm(Request $request){
+    
+        $id = $request->input('id');
+        $userId = $request->input('userId');
+  
+        try {
+  
+            $collection = collectionRecord::find($id);
+            $collection -> update([
+                    'status' => "COL",
+                    'remarks' => "Collected by resident",
+                    'date_collected' => now()
+                ]);
+  
+                $requestedDocuments = DB::table('requested_documents')->where('for_request_id', '=', $collection->request_id)
+                ->update( ['status' => "COL"] );
+  
+
+                $request = DB::table('request_records')->where('id','=', $collection->request_id)->first();
+                $resident = DB::table('users')->where('UUID','=',  $request->resident_id)->first();
+                if ( $collection->barangay_officer_id != null) {
+
+
+                    $officer = DB::table('users')->where('UUID','=',  $collection->barangay_officer_id)->first();
+                    Log::info($officer->id);
+                
+                    notificationController::notifySpecific($resident->id, $officer->id, $id, "Collection", "Collected");
+                
+                }
+
+                return response()->json(['status' => 'success', 'message' => 'Confirmed Collection successfully'], 200);
+
+
+
+        } catch (\Throwable $th) {
+  
+            Log::info("Error: ".$th);
+            return response()->json(['status' => 'failed'], 200);
+  
+        }
+  
+      }
+
+
     
     public function cancel(Request $request){
     

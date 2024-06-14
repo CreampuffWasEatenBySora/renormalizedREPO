@@ -19,8 +19,13 @@
          @php
             switch (  $collection_data[0]['collectionDetails']['status'] ) {
             
-            case 'TBC':
+           
+               case 'TBC':
                echo 'To Be Collected by Requestee';
+               break;
+
+            case 'RED':
+               echo 'Ready to be collected by Requestee';
                break;
 
             case 'COL':
@@ -58,7 +63,7 @@
       <textarea  name="remarksInput" id="remarksInput"   rows="4"></textarea>
 
       <button class="approvaButton" id="approveButton" onclick="confirmCollectionDate()">
-         Confirm Collection
+         Documents are ready
       </button>
       
 
@@ -286,19 +291,19 @@
             if(d.getDate() < schedDate.getDate()) {
                      
                   if (confirm("It isn't the request's collection date yet. Confirm?")) {
-                     updateRequest("COL");
+                     updateRequest("RED");
                   }  
                
                } else if (d.getDate() > schedDate.getDate()) {
  
                   if (confirm("This is an overdue request. Confirm?")) {
-                     updateRequest("COL");
+                     updateRequest("RED");
                   }  
                
                } else {
 
                   if (confirm("Has the resident received their requested documents already? Confirm?")) {
-                     updateRequest("COL");
+                     updateRequest("RED");
                   }  
                
                }

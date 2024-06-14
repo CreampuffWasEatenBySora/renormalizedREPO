@@ -59,10 +59,10 @@
       <p> Registered on: {{$data[0]['date_registered'] }}</p>
       <p> Responded by: 
       @php
-         if ( $data[0]['Barangay Officer'] == null) {
+         if ( $data[0]['Barangay_Officer'] == null) {
             echo "Waiting for approval";
          } else {
-            echo $data[0]['Barangay Officer'];
+            echo $data[0]['Barangay_Officer'];
          }
       @endphp   
       

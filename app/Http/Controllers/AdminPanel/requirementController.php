@@ -58,6 +58,23 @@ class requirementController extends Controller
 
     }
 
+    
+    public function view(Request $request){
+        
+
+        try {
+            $requirement = document_requirement::find($request->input('reqID'));
+            $jsonData  = json_encode($requirement);
+            Log::info($jsonData );
+            
+            return view('administrator.requirements_operations.view_requirement', ['requirementData' => json_decode($jsonData, true)]);
+
+        } catch (\Throwable $th) {
+            return response()->json(['status' => 'failed'], 200);
+        }
+
+    }
+
     public function store(Request $request){
         $name = $request->input('name');
         $desc = $request->input('description');
@@ -81,5 +98,33 @@ class requirementController extends Controller
             return response()->json(['status' => 'failed'], 200);
         }
 
+    }
+
+    public function modify(Request $request){
+
+        $requirementID = $request->input('reqID');
+        $reqName = $request->input('name');
+        $reqDesc = $request->input('description');
+        
+    
+        try {
+        
+            
+        $requirement = document_requirement::find($requirementID);
+        $requirement->update([
+            'name' => $reqName,
+            'description' =>$reqDesc
+        ]);
+        return redirect()-> route('admin.list_requirements');
+
+        
+        } catch (\Throwable $th) {
+            Log::error("Request set returned unsuccessfully : ".$th->getMessage() );  // Debug statement
+
+            return response()->json(['status' => 'failed'], 200);
+
+        }
+        
+    
     }
 }

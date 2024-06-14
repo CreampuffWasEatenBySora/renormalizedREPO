@@ -66,7 +66,7 @@
       </form>
 
       <form action= "{{ route('admin.view_requirement') }}" method="get" id="edit_button" style="display: none" >
-        <input  style="display: none" id="id" name="id" type="text"  >
+        <input  style="display: none" id="reqID" name="reqID" type="text"  >
         <button type="submit">
           Edit This Requirement
         </button>
@@ -101,7 +101,7 @@ var jsonData = {!! $requirement_jsonData !!};
 
 // Get a reference to the table body
 var tableBody = document.getElementById('table').getElementsByTagName('tbody')[0];
-let requirement_id = document.getElementById('id');
+let requirement_id = document.getElementById('reqID');
 let requirement_regdate = document.getElementById('regdate');
 let requirement_name = document.getElementById('name');
 let requirement_description = document.getElementById('description');

@@ -116,6 +116,7 @@ class requestRecordController extends Controller
 
             $request = $query->first();
             $array = json_decode(json_encode($request ), true);
+            // Log::info($request);  // Debug statement
               
             $request_entry['request']['requestDetails']= $array;
  
@@ -247,14 +248,14 @@ class requestRecordController extends Controller
 
                         DB::table('requested_documents')
                         ->where('id', $document->id)
-                        ->update(['remarks' => 'Granted', 
+                        ->update([
                         'status' => 'APR']);
     
                     } else {
                       
                         DB::table('requested_documents')
                         ->where('id', $document->id)
-                        ->update(['remarks' => 'Not Granted',  'status' => 'REJ']);
+                        ->update(['status' => 'REJ']);
     
                     }
                  

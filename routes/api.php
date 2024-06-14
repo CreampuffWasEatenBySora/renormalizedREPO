@@ -49,6 +49,7 @@ Route::post('/getRequirementURLs', [requestControllerAPI::class, 'fetchFileURLs'
 
 Route::post('/fetchCollections', [CollectionControllerAPI::class, 'fetch']);
 Route::post('/storeCollection', [CollectionControllerAPI::class, 'store']);
+Route::post('/confirmCollection', [CollectionControllerAPI::class, 'confirm']);
 Route::post('/cancelCollection', [CollectionControllerAPI::class, 'cancel']);
 
 
